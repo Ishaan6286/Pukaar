@@ -59,6 +59,10 @@ export default {
           to: { height: '0' },
         },
       },
+      fontFamily: {
+        sans: ['Inter', 'ui-sans-serif', 'system-ui'],
+        heading: ['Manrope', 'ui-sans-serif', 'system-ui'],
+      },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',

@@ -1,4 +1,4 @@
-import { createBrowserRouter } from 'react-router-dom'
+import { createBrowserRouter, Outlet } from 'react-router-dom'
 
 import App from '@/App'
 import Home from '@/routes/citizen/Home'
@@ -10,6 +10,10 @@ import Feed from '@/routes/citizen/Feed'
 import Dashboard from '@/routes/ngo/Dashboard'
 import ReportDetail from '@/routes/ngo/ReportDetail'
 import NewPost from '@/routes/ngo/NewPost'
+import Login from '@/routes/Login'
+
+import ProtectedRoute from '@/components/ProtectedRoute'
+import RoleGate from '@/components/RoleGate'
 
 function NotFound() {
   return (
@@ -22,18 +26,47 @@ function NotFound() {
 
 export const router = createBrowserRouter([
   {
+    path: '/login',
+    element: <Login />,
+  },
+  {
     path: '/',
     element: <App />,
     children: [
-      { index: true, element: <Home /> },
-      { path: 'report', element: <ReportFlow /> },
-      { path: 'reports', element: <MyReports /> },
-      { path: 'reports/:reportId', element: <ReportStatus /> },
-      { path: 'map', element: <HelpMap /> },
-      { path: 'feed', element: <Feed /> },
-      { path: 'ngo/dashboard', element: <Dashboard /> },
-      { path: 'ngo/reports/:reportId', element: <ReportDetail /> },
-      { path: 'ngo/posts/new', element: <NewPost /> },
+      {
+        // Citizen routes
+        element: (
+          <ProtectedRoute>
+            <RoleGate allow={['citizen', 'admin']}>
+              <Outlet />
+            </RoleGate>
+          </ProtectedRoute>
+        ),
+        children: [
+          { index: true, element: <Home /> },
+          { path: 'report', element: <ReportFlow /> },
+          { path: 'reports', element: <MyReports /> },
+          { path: 'reports/:reportId', element: <ReportStatus /> },
+          { path: 'map', element: <HelpMap /> },
+          { path: 'feed', element: <Feed /> },
+        ]
+      },
+      {
+        // NGO Routes
+        path: 'ngo',
+        element: (
+          <ProtectedRoute>
+            <RoleGate allow={['ngo', 'admin']}>
+              <Outlet />
+            </RoleGate>
+          </ProtectedRoute>
+        ),
+        children: [
+          { path: 'dashboard', element: <Dashboard /> },
+          { path: 'reports/:reportId', element: <ReportDetail /> },
+          { path: 'posts/new', element: <NewPost /> },
+        ]
+      },
       { path: '*', element: <NotFound /> },
     ],
   },

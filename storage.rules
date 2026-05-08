@@ -1,10 +1,69 @@
-// TODO(person 1): tighten in a later prompt — currently auth-required but
-// otherwise permissive so teammates can develop without rule friction.
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
+
+    // -------------------------------------------------------------------------
+    // Helper Functions
+    // -------------------------------------------------------------------------
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Validate MIME types
+    function isImage() {
+      return request.resource.contentType.matches('image/.*');
+    }
+
+    function isAudio() {
+      return request.resource.contentType.matches('audio/.*');
+    }
+
+    // Validate maximum file sizes (input in Megabytes)
+    function isValidSize(megabytes) {
+      return request.resource.size < megabytes * 1024 * 1024;
+    }
+
+    // -------------------------------------------------------------------------
+    // Storage Rules
+    // -------------------------------------------------------------------------
+
+    // User Profile Avatars
+    match /users/{userId}/{allPaths=**} {
+      allow read: if isAuthenticated();
+      // Strict limit: Must be the owner, must be an image, max 5MB
+      allow write: if isOwner(userId) && isImage() && isValidSize(5);
+    }
+
+    // Pukaar Civic Reports Media (Images, Audio, Video)
+    match /reports/{allPaths=**} {
+      // Any authenticated user/NGO can read report media
+      allow read: if isAuthenticated();
+      
+      // Because media URLs are saved dynamically with Date timestamps, we allow authenticated users to write.
+      // Limits: Audio files up to 10MB, Images up to 15MB to support high-res structural damage photos.
+      allow write: if isAuthenticated() && (
+        (isImage() && isValidSize(15)) || 
+        (isAudio() && isValidSize(10))
+      );
+    }
+
+    // NGO Community Feed Post Media
+    match /posts/{ngoId}/{allPaths=**} {
+      allow read: if isAuthenticated();
+      
+      // Allow authenticated NGO users to upload images for feed updates
+      // Max 15MB for high-res impact gallery photos
+      allow write: if isAuthenticated() && isImage() && isValidSize(15);
+    }
+    
+    // Strict default fallback - deny everything else
     match /{allPaths=**} {
-      allow read, write: if request.auth != null;
+      allow read, write: if false;
     }
   }
 }

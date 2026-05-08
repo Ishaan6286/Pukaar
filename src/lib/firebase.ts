@@ -1,11 +1,23 @@
-import { initializeApp, type FirebaseApp } from 'firebase/app'
-import { getAuth, type Auth } from 'firebase/auth'
-import {
-  enableIndexedDbPersistence,
-  getFirestore,
-  type Firestore,
-} from 'firebase/firestore'
-import { getStorage, type FirebaseStorage } from 'firebase/storage'
+import { initializeApp, getApps, getApp } from 'firebase/app'
+import { getAuth } from 'firebase/auth'
+import { getFirestore } from 'firebase/firestore'
+import { getStorage } from 'firebase/storage'
+
+// Validate required environment variables
+const requiredEnvVars = [
+  'VITE_FIREBASE_API_KEY',
+  'VITE_FIREBASE_AUTH_DOMAIN',
+  'VITE_FIREBASE_PROJECT_ID',
+  'VITE_FIREBASE_STORAGE_BUCKET',
+  'VITE_FIREBASE_MESSAGING_SENDER_ID',
+  'VITE_FIREBASE_APP_ID',
+] as const
+
+requiredEnvVars.forEach((envVar) => {
+  if (!import.meta.env[envVar]) {
+    console.warn(`Warning: Missing environment variable ${envVar}`)
+  }
+})
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -16,17 +28,12 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 }
 
-export const app: FirebaseApp = initializeApp(firebaseConfig)
-export const auth: Auth = getAuth(app)
-export const db: Firestore = getFirestore(app)
-export const storage: FirebaseStorage = getStorage(app)
+// Initialize Firebase App lazily to avoid issues with SSR or multiple initializations
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApp()
 
-// Best-effort offline persistence. Fails silently if multiple tabs are open
-// or the browser does not support IndexedDB — we just continue without it.
-try {
-  void enableIndexedDbPersistence(db).catch((err: unknown) => {
-    console.warn('[firebase] IndexedDB persistence unavailable:', err)
-  })
-} catch (err) {
-  console.warn('[firebase] IndexedDB persistence threw synchronously:', err)
-}
+// Initialize Services
+export const auth = getAuth(app)
+export const db = getFirestore(app)
+export const storage = getStorage(app)
+
+export default app

@@ -1,0 +1,192 @@
+{
+  "ngos": [
+    {
+      "id": "ngo_bglr_animal",
+      "organizationName": "CUPA Bengaluru",
+      "registrationNumber": "KAR-NGO-1991-042",
+      "contactEmail": "rescue@cupa.org",
+      "contactPhone": "+918022947300",
+      "website": "https://cupabangalore.org",
+      "verificationStatus": "verified",
+      "categories": ["animal_welfare"],
+      "location": {
+        "address": "Hebbal, Bengaluru",
+        "lat": 13.0306,
+        "lng": 77.5925,
+        "geohash": "tdr1x"
+      },
+      "stats": {
+        "totalResolved": 14200,
+        "activeVolunteers": 150
+      }
+    },
+    {
+      "id": "ngo_bglr_people",
+      "organizationName": "Akshaya Patra Foundation",
+      "registrationNumber": "KAR-NGO-2000-112",
+      "contactEmail": "info@akshayapatra.org",
+      "contactPhone": "+918030143400",
+      "website": "https://www.akshayapatra.org",
+      "verificationStatus": "verified",
+      "categories": ["community_need", "person_welfare"],
+      "location": {
+        "address": "Rajajinagar, Bengaluru",
+        "lat": 12.9868,
+        "lng": 77.5458,
+        "geohash": "tdr1n"
+      },
+      "stats": {
+        "totalResolved": 5000000,
+        "activeVolunteers": 300
+      }
+    }
+  ],
+  "users": [
+    {
+      "uid": "admin_cupa_1",
+      "email": "admin@cupabangalore.org",
+      "displayName": "Ramesh Kumar (CUPA)",
+      "role": "ngo_admin",
+      "ngoId": "ngo_bglr_animal",
+      "photoURL": "https://ui-avatars.com/api/?name=Ramesh+Kumar&background=0D8ABC&color=fff"
+    },
+    {
+      "uid": "admin_akshaya_1",
+      "email": "admin@akshayapatra.org",
+      "displayName": "Priya Sharma",
+      "role": "ngo_admin",
+      "ngoId": "ngo_bglr_people",
+      "photoURL": "https://ui-avatars.com/api/?name=Priya+Sharma&background=E11D48&color=fff"
+    },
+    {
+      "uid": "citizen_vol_1",
+      "email": "arjun.p@example.com",
+      "displayName": "Arjun Patel",
+      "role": "citizen",
+      "photoURL": "https://ui-avatars.com/api/?name=Arjun+Patel&background=10B981&color=fff"
+    }
+  ],
+  "helpLocations": [
+    {
+      "id": "loc_indiranagar_kitchen",
+      "name": "Indiranagar Community Kitchen",
+      "type": "food_bank",
+      "location": {
+        "address": "100 Feet Rd, Indiranagar, Bengaluru",
+        "lat": 12.9784,
+        "lng": 77.6408,
+        "geohash": "tdr1x"
+      },
+      "contactPhone": "+919876543210",
+      "isOpen": true,
+      "capacity": 500,
+      "currentOccupancy": 150,
+      "verifiedByNgoId": "ngo_bglr_people"
+    },
+    {
+      "id": "loc_koramangala_shelter",
+      "name": "Koramangala Emergency Shelter",
+      "type": "shelter",
+      "location": {
+        "address": "80 Feet Rd, Koramangala 4th Block, Bengaluru",
+        "lat": 12.9345,
+        "lng": 77.6266,
+        "geohash": "tdr1w"
+      },
+      "contactPhone": "+918012345678",
+      "isOpen": true,
+      "capacity": 100,
+      "currentOccupancy": 45,
+      "verifiedByNgoId": "ngo_bglr_people"
+    },
+    {
+      "id": "loc_sarjapur_rescue",
+      "name": "Sarjapur Animal Rescue Center",
+      "type": "relief_camp",
+      "location": {
+        "address": "Sarjapur Main Road, Bengaluru",
+        "lat": 12.9224,
+        "lng": 77.6770,
+        "geohash": "tdr1y"
+      },
+      "contactPhone": "+919988776655",
+      "isOpen": true,
+      "capacity": 200,
+      "currentOccupancy": 180,
+      "verifiedByNgoId": "ngo_bglr_animal"
+    }
+  ],
+  "posts": [
+    {
+      "id": "post_1",
+      "ngoId": "ngo_bglr_people",
+      "type": "urgent",
+      "title": "Urgent: Rice & Dal Needed for Majestic Relief Camp",
+      "body": "Due to recent heavy rains, our Majestic Relief Camp is currently sheltering an additional 200 daily wage workers. We are critically low on raw rice and dal to prepare dinner for tonight. Any nearby volunteers or donors please drop supplies directly at the camp.",
+      "mediaUrls": ["https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=1000"],
+      "fundedPercentage": 45,
+      "metrics": "200 extra meals needed today"
+    },
+    {
+      "id": "post_2",
+      "ngoId": "ngo_bglr_animal",
+      "type": "event",
+      "title": "Weekend Pet Adoption Drive @ Cubbon Park",
+      "body": "Come meet over 40 rescued puppies and kittens looking for their forever homes! All animals are vaccinated and microchipped. We also need 5 more volunteers to help manage the enclosures.",
+      "mediaUrls": ["https://images.unsplash.com/photo-1544568100-847a948585b9?q=80&w=1000"],
+      "metrics": "40+ pets available"
+    }
+  ],
+  "reports": [
+    {
+      "id": "report_1",
+      "userId": "citizen_vol_1",
+      "status": "under_review",
+      "urgency": "high",
+      "category": "animal_welfare",
+      "subcategory": "injured_animal",
+      "location": {
+        "lat": 12.9516,
+        "lng": 77.5946,
+        "address": "Lalbagh Botanical Garden North Gate, Bengaluru",
+        "geohash": "tdr1w"
+      },
+      "text": "Found a severely injured stray dog near the North Gate. Bleeding from the back leg. Needs immediate medical attention.",
+      "aiSummary": {
+        "category": "animal_welfare",
+        "subcategory": "injured_animal",
+        "urgency": "high",
+        "summary": "Injured stray dog bleeding from back leg.",
+        "suggestedAction": "Dispatch animal ambulance immediately with first aid kit.",
+        "suppliesNeeded": ["Animal First Aid", "Stretcher", "Muzzle"],
+        "needsHumanReview": false
+      },
+      "assignedNgoId": "ngo_bglr_animal"
+    },
+    {
+      "id": "report_2",
+      "userId": "citizen_vol_1",
+      "status": "submitted",
+      "urgency": "medium",
+      "category": "community_need",
+      "subcategory": "food_shortage",
+      "location": {
+        "lat": 12.9904,
+        "lng": 77.7126,
+        "address": "Whitefield Main Rd, Bengaluru",
+        "geohash": "tdr33"
+      },
+      "text": "A group of roughly 15 migrant workers near the construction site haven't had rations for two days.",
+      "aiSummary": {
+        "category": "community_need",
+        "subcategory": "food_shortage",
+        "urgency": "medium",
+        "summary": "15 migrant workers without food rations for 2 days.",
+        "suggestedAction": "Deliver dry rations (rice, dal, oil) or cooked meals for 15 individuals.",
+        "suppliesNeeded": ["15 Cooked Meals", "15L Drinking Water", "Dry Rations"],
+        "needsHumanReview": true
+      },
+      "assignedNgoId": null
+    }
+  ]
+}

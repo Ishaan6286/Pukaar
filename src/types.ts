@@ -1,113 +1,129 @@
-import type { Timestamp } from 'firebase/firestore'
+import { Timestamp, GeoPoint } from 'firebase/firestore'
 
-export type UserRole = 'citizen' | 'ngo_admin'
+export type Role = 'citizen' | 'ngo' | 'admin'
 
-export type ReportCategory = 'animal_welfare' | 'person_welfare' | 'community_need'
-
-export type Urgency = 'high' | 'medium' | 'low'
-
-export type ReportStatus = 'pending' | 'submitted' | 'accepted' | 'resolved'
-
-export type HelpLocationType =
-  | 'food_bank'
-  | 'shelter'
-  | 'animal_rescue'
-  | 'community_kitchen'
-
-export type PostType = 'drive' | 'donation' | 'update'
-
-export interface LatLng {
-  lat: number
-  lng: number
-}
-
-export interface User {
+export type UserProfile = {
+  id?: string // set by converter
   uid: string
   email: string
-  displayName: string
-  photoURL?: string
-  role: UserRole
+  displayName: string | null
+  photoURL: string | null
+  role: Role
   ngoId?: string
   createdAt: Timestamp
-  pingCount?: number
-  trustScore?: number
+  updatedAt: Timestamp
 }
 
-export interface Ngo {
-  id: string
-  name: string
-  description: string
-  categories: ReportCategory[]
-  location: LatLng
-  geohash: string
+export type NgoProfile = {
+  id?: string
+  organizationName: string
+  verificationStatus: 'pending' | 'verified' | 'rejected'
+  address: string
+  location?: GeoLocation
+  serviceAreas: string[]
   contactPhone: string
   contactEmail: string
-  logoUrl: string
-  verified: boolean
-  adminUids: string[]
-}
-
-export interface ReportAI {
-  category: ReportCategory
-  subcategory: string
-  summary: string
-  urgency: Urgency
-  suggestedAction: string
-  suppliesNeeded: string[]
-  needsHumanReview: boolean
-}
-
-export interface Report {
-  id: string
-  reporterUid: string
-  reporterAnonHandle: string
+  website?: string
   description?: string
-  photoUrl?: string
-  audioUrl?: string
-  location: LatLng
-  geohash: string
-  status: ReportStatus
-  ai?: ReportAI
-  ngoId?: string
-  ngoName?: string
+  stats: {
+    totalResolved: number
+    activeReports: number
+    avgResponseTimeMs: number
+  }
   createdAt: Timestamp
-  acceptedAt?: Timestamp
-  resolvedAt?: Timestamp
+  updatedAt: Timestamp
 }
 
-export interface IncomingReport extends Report {
-  centralReportId: string
-}
+export type ReportStatus = 'submitted' | 'under_review' | 'dispatched' | 'resolved' | 'rejected'
 
-export interface HelpLocation {
-  id: string
-  type: HelpLocationType
-  name: string
-  address: string
-  location: LatLng
+export type ReportUrgency = 'low' | 'medium' | 'high'
+
+export type GeoLocation = {
+  lat: number
+  lng: number
   geohash: string
-  hours: string
-  phone: string
+  address: string
 }
 
-export interface Post {
-  id: string
+export type AIClassification = {
+  category: string
+  urgency: ReportUrgency
+  confidence: number
+  summary?: string
+  suggestedAction?: string
+  suggestedSupplies?: string[]
+}
+
+export type Report = {
+  id?: string
+  userId: string
+  category: string
+  urgency: ReportUrgency
+  status: ReportStatus
+  description: string
+  location: GeoLocation
+  mediaUrls: string[]
+  
+  // Assignment details
+  assignedNgoId: string | null
+  responderTeamId?: string
+  etaMinutes?: number
+  
+  // AI fields
+  aiClassification?: AIClassification
+  
+  createdAt: Timestamp
+  updatedAt: Timestamp
+  resolvedAt: Timestamp | null
+}
+
+export type HelpLocationType = 'hospital' | 'shelter' | 'food_bank' | 'police' | 'fire_station' | 'relief_camp'
+
+export type HelpLocation = {
+  id?: string
+  name: string
+  type: HelpLocationType
+  location: GeoLocation
+  capacity?: number
+  currentOccupancy?: number
+  contactPhone: string
+  isOpen: boolean
+  verifiedByNgoId?: string
+  createdAt: Timestamp
+  updatedAt: Timestamp
+}
+
+export type PostType = 'event' | 'success' | 'urgent' | 'volunteer'
+
+export type CommunityPost = {
+  id?: string
   ngoId: string
-  ngoName: string
-  ngoLogoUrl: string
   type: PostType
   title: string
   body: string
-  photoUrl?: string
-  eventDate?: Timestamp
-  location?: LatLng
-  rsvpCount: number
+  mediaUrls: string[]
+  metrics?: string
+  fundedPercentage?: number
   createdAt: Timestamp
+  updatedAt: Timestamp
 }
 
-export interface Rsvp {
-  uid: string
-  displayName: string
-  status: 'going'
+export type RsvpStatus = 'attending' | 'interested' | 'declined'
+
+export type Rsvp = {
+  id?: string
+  postId: string
+  userId: string
+  status: RsvpStatus
+  createdAt: Timestamp
+  updatedAt: Timestamp
+}
+
+export type TimelineEvent = {
+  id?: string
+  reportId: string
+  status: ReportStatus
+  description: string
+  actorId: string // who triggered this
   createdAt: Timestamp
 }

@@ -5,7 +5,6 @@ import {
   getFirestore,
   type Firestore,
 } from 'firebase/firestore'
-import { getStorage, type FirebaseStorage } from 'firebase/storage'
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -19,7 +18,6 @@ const firebaseConfig = {
 export const app: FirebaseApp = initializeApp(firebaseConfig)
 export const auth: Auth = getAuth(app)
 export const db: Firestore = getFirestore(app)
-export const storage: FirebaseStorage = getStorage(app)
 
 // Best-effort offline persistence. Fails silently if multiple tabs are open
 // or the browser does not support IndexedDB — we just continue without it.

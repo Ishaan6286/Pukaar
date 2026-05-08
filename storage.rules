@@ -1,10 +1,9 @@
-// TODO(person 1): tighten in a later prompt — currently auth-required but
-// otherwise permissive so teammates can develop without rule friction.
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
+    // We do NOT use Firebase Storage in this build. Deny everything.
     match /{allPaths=**} {
-      allow read, write: if request.auth != null;
+      allow read, write: if false;
     }
   }
 }

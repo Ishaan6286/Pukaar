@@ -5,7 +5,7 @@ import type { LatLng, Report } from '@/types'
 export async function createReport(_input: {
   reporterUid: string
   description?: string
-  photoUrl?: string
+  photoDataUrl?: string
   audioUrl?: string
   location: LatLng
 }): Promise<string> {

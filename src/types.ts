@@ -62,7 +62,8 @@ export interface Report {
   reporterUid: string
   reporterAnonHandle: string
   description?: string
-  photoUrl?: string
+  // Base64 data URL of the resized JPEG. Stored inline because we don't use Firebase Storage.
+  photoDataUrl?: string
   audioUrl?: string
   location: LatLng
   geohash: string

@@ -4,7 +4,7 @@ import type { ReportAI } from '@/types'
 
 export async function classifyReport(_input: {
   description?: string
-  photoUrl?: string
+  photoDataUrl?: string
   audioUrl?: string
 }): Promise<ReportAI> {
   throw new Error('not implemented')

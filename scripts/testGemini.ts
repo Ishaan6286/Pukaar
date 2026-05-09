@@ -322,7 +322,6 @@ async function main(): Promise<void> {
   let succeeded = 0
   for (const t of TESTS) {
     // Sequential execution — easier to read output and avoids rate-limit churn.
-    // eslint-disable-next-line no-await-in-loop
     const ok = await runTest(t)
     if (ok) succeeded++
     else failed.push(t.id)

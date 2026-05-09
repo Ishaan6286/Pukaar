@@ -10,31 +10,95 @@ import Feed from '@/routes/citizen/Feed'
 import Dashboard from '@/routes/ngo/Dashboard'
 import ReportDetail from '@/routes/ngo/ReportDetail'
 import NewPost from '@/routes/ngo/NewPost'
+import Login from '@/routes/Login'
+import RoleGate from '@/components/RoleGate'
 
-function NotFound() {
-  return (
-    <div className="p-6">
-      <h1 className="text-2xl font-semibold">404 — Not found</h1>
-      <p className="text-muted-foreground">The page you're looking for doesn't exist.</p>
-    </div>
-  )
-}
+const notFoundElement = (
+  <div className="p-6">
+    <h1 className="text-2xl font-semibold">404 — Not found</h1>
+    <p className="text-muted-foreground">The page you're looking for doesn't exist.</p>
+  </div>
+)
 
 export const router = createBrowserRouter([
   {
     path: '/',
     element: <App />,
     children: [
-      { index: true, element: <Home /> },
-      { path: 'report', element: <ReportFlow /> },
-      { path: 'reports', element: <MyReports /> },
-      { path: 'reports/:reportId', element: <ReportStatus /> },
-      { path: 'map', element: <HelpMap /> },
-      { path: 'feed', element: <Feed /> },
-      { path: 'ngo/dashboard', element: <Dashboard /> },
-      { path: 'ngo/reports/:reportId', element: <ReportDetail /> },
-      { path: 'ngo/posts/new', element: <NewPost /> },
-      { path: '*', element: <NotFound /> },
+      { path: 'login', element: <Login /> },
+      {
+        index: true,
+        element: (
+          <RoleGate allow={['citizen', 'ngo_admin']}>
+            <Home />
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'report',
+        element: (
+          <RoleGate allow={['citizen', 'ngo_admin']}>
+            <ReportFlow />
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'reports',
+        element: (
+          <RoleGate allow={['citizen', 'ngo_admin']}>
+            <MyReports />
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'reports/:reportId',
+        element: (
+          <RoleGate allow={['citizen', 'ngo_admin']}>
+            <ReportStatus />
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'map',
+        element: (
+          <RoleGate allow={['citizen', 'ngo_admin']}>
+            <HelpMap />
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'feed',
+        element: (
+          <RoleGate allow={['citizen', 'ngo_admin']}>
+            <Feed />
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'ngo/dashboard',
+        element: (
+          <RoleGate allow={['ngo_admin']}>
+            <Dashboard />
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'ngo/reports/:reportId',
+        element: (
+          <RoleGate allow={['ngo_admin']}>
+            <ReportDetail />
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'ngo/posts/new',
+        element: (
+          <RoleGate allow={['ngo_admin']}>
+            <NewPost />
+          </RoleGate>
+        ),
+      },
+      { path: '*', element: notFoundElement },
     ],
   },
 ])

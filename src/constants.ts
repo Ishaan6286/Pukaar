@@ -34,3 +34,11 @@ export const MAX_PHOTO_BASE64_BYTES = 750 * 1024
 export const MAX_AUDIO_BYTES_INLINE = 4 * 1024 * 1024
 
 export const DEFAULT_DEMO_LOCATION: LatLng = { lat: 12.9716, lng: 77.5946 }
+
+// Pre-seeded NGO admin mapping. Edit values before demo.
+// Seed script will create matching /ngos/{ngoId} docs.
+export const NGO_ADMIN_EMAIL_TO_NGO_ID: Record<string, string> = {
+  // 'admin1@example.com': 'ngo_animal_rescue_blr',
+  // 'admin2@example.com': 'ngo_homeless_shelter_blr',
+}
+export const NGO_ADMIN_EMAILS = Object.keys(NGO_ADMIN_EMAIL_TO_NGO_ID)

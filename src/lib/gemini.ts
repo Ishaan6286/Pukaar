@@ -115,6 +115,7 @@ export async function classifyReport(input: ClassifyReportInput): Promise<Report
     const truncated = responseText.length > 500 ? `${responseText.slice(0, 500)}…` : responseText
     throw new Error(
       `classifyReport: response was not valid JSON. ${(err as Error).message}. Raw: ${truncated}`,
+      { cause: err },
     )
   }
 
@@ -124,6 +125,7 @@ export async function classifyReport(input: ClassifyReportInput): Promise<Report
     const truncated = responseText.length > 500 ? `${responseText.slice(0, 500)}…` : responseText
     throw new Error(
       `classifyReport: ${(err as Error).message}. Raw: ${truncated}`,
+      { cause: err },
     )
   }
 }

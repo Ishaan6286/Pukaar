@@ -10,7 +10,11 @@
       "contactEmail": "rescue@example.org",
       "logoUrl": "https://api.dicebear.com/7.x/initials/svg?seed=BAR&backgroundColor=10b981",
       "verified": true,
-      "adminUids": []
+      "adminUids": [],
+      "hours": "24/7 emergency line",
+      "establishedYear": 2012,
+      "volunteerCount": 96,
+      "website": "https://blranimalrescue.example.org"
     },
     {
       "id": "ngo_paws_koramangala",
@@ -22,7 +26,11 @@
       "contactEmail": "hello@pawskoramangala.example.org",
       "logoUrl": "https://api.dicebear.com/7.x/initials/svg?seed=PCK&backgroundColor=22c55e",
       "verified": true,
-      "adminUids": []
+      "adminUids": [],
+      "hours": "Daily, 8am–9pm",
+      "establishedYear": 2016,
+      "volunteerCount": 54,
+      "website": "https://pawskoramangala.example.org"
     },
     {
       "id": "ngo_strays_marathahalli",
@@ -34,7 +42,11 @@
       "contactEmail": "team@straysmthl.example.org",
       "logoUrl": "https://api.dicebear.com/7.x/initials/svg?seed=MSC&backgroundColor=14b8a6",
       "verified": true,
-      "adminUids": []
+      "adminUids": [],
+      "hours": "Mon–Sat, 9am–7pm",
+      "establishedYear": 2018,
+      "volunteerCount": 31,
+      "website": "https://straysmthl.example.org"
     },
     {
       "id": "ngo_homeless_shelter_jayanagar",
@@ -46,7 +58,11 @@
       "contactEmail": "contact@jayanagarshelter.example.org",
       "logoUrl": "https://api.dicebear.com/7.x/initials/svg?seed=JHS&backgroundColor=3b82f6",
       "verified": true,
-      "adminUids": []
+      "adminUids": [],
+      "hours": "Intake 6pm–9pm, services 24/7",
+      "establishedYear": 2009,
+      "volunteerCount": 73,
+      "website": "https://jayanagarshelter.example.org"
     },
     {
       "id": "ngo_helping_hands_whitefield",
@@ -58,7 +74,11 @@
       "contactEmail": "support@helpinghandswf.example.org",
       "logoUrl": "https://api.dicebear.com/7.x/initials/svg?seed=HHW&backgroundColor=6366f1",
       "verified": true,
-      "adminUids": []
+      "adminUids": [],
+      "hours": "Mon–Fri, 10am–6pm",
+      "establishedYear": 2014,
+      "volunteerCount": 42,
+      "website": "https://helpinghandswf.example.org"
     },
     {
       "id": "ngo_seva_yelahanka",
@@ -70,7 +90,11 @@
       "contactEmail": "office@sevayelahanka.example.org",
       "logoUrl": "https://api.dicebear.com/7.x/initials/svg?seed=SY&backgroundColor=8b5cf6",
       "verified": true,
-      "adminUids": []
+      "adminUids": [],
+      "hours": "Tue–Sun, 9am–5pm",
+      "establishedYear": 2008,
+      "volunteerCount": 58,
+      "website": "https://sevayelahanka.example.org"
     },
     {
       "id": "ngo_community_first_hsr",
@@ -82,7 +106,11 @@
       "contactEmail": "team@communityfirst.example.org",
       "logoUrl": "https://api.dicebear.com/7.x/initials/svg?seed=CFH&backgroundColor=f59e0b",
       "verified": true,
-      "adminUids": []
+      "adminUids": [],
+      "hours": "Mon–Fri, 11am–7pm",
+      "establishedYear": 2019,
+      "volunteerCount": 22,
+      "website": "https://communityfirsthsr.example.org"
     },
     {
       "id": "ngo_civic_action_ec",
@@ -94,7 +122,11 @@
       "contactEmail": "hello@civicactionec.example.org",
       "logoUrl": "https://api.dicebear.com/7.x/initials/svg?seed=CAE&backgroundColor=ef4444",
       "verified": true,
-      "adminUids": []
+      "adminUids": [],
+      "hours": "Weekends, 9am–5pm",
+      "establishedYear": 2021,
+      "volunteerCount": 14,
+      "website": "https://civicactionec.example.org"
     }
   ],
   "help_locations": [

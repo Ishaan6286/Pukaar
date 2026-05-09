@@ -1,12 +1,13 @@
-import { createBrowserRouter } from 'react-router-dom'
+import { createBrowserRouter, Navigate } from 'react-router-dom'
 
 import App from '@/App'
-import Home from '@/routes/citizen/Home'
+import CitizenLayout from '@/routes/citizen/CitizenLayout'
 import ReportFlow from '@/routes/citizen/ReportFlow'
 import MyReports from '@/routes/citizen/MyReports'
 import ReportStatus from '@/routes/citizen/ReportStatus'
 import HelpMap from '@/routes/citizen/HelpMap'
 import Feed from '@/routes/citizen/Feed'
+import NgoProfile from '@/routes/citizen/NgoProfile'
 import Dashboard from '@/routes/ngo/Dashboard'
 import ReportDetail from '@/routes/ngo/ReportDetail'
 import NewPost from '@/routes/ngo/NewPost'
@@ -27,62 +28,25 @@ export const router = createBrowserRouter([
     element: <App />,
     children: [
       { path: 'login', element: <Login /> },
+
       {
-        index: true,
         element: (
           <RoleGate allow={['citizen', 'ngo_admin']}>
-            <Home />
+            <CitizenLayout />
           </RoleGate>
         ),
+        children: [
+          { index: true, element: <Feed /> },
+          { path: 'feed', element: <Navigate to="/" replace /> },
+          { path: 'report', element: <ReportFlow /> },
+          { path: 'reports', element: <MyReports /> },
+          { path: 'reports/:reportId', element: <ReportStatus /> },
+          { path: 'map', element: <HelpMap /> },
+          { path: 'profile', element: <Profile /> },
+          { path: 'ngos/:ngoId', element: <NgoProfile /> },
+        ],
       },
-      {
-        path: 'report',
-        element: (
-          <RoleGate allow={['citizen', 'ngo_admin']}>
-            <ReportFlow />
-          </RoleGate>
-        ),
-      },
-      {
-        path: 'reports',
-        element: (
-          <RoleGate allow={['citizen', 'ngo_admin']}>
-            <MyReports />
-          </RoleGate>
-        ),
-      },
-      {
-        path: 'reports/:reportId',
-        element: (
-          <RoleGate allow={['citizen', 'ngo_admin']}>
-            <ReportStatus />
-          </RoleGate>
-        ),
-      },
-      {
-        path: 'map',
-        element: (
-          <RoleGate allow={['citizen', 'ngo_admin']}>
-            <HelpMap />
-          </RoleGate>
-        ),
-      },
-      {
-        path: 'feed',
-        element: (
-          <RoleGate allow={['citizen', 'ngo_admin']}>
-            <Feed />
-          </RoleGate>
-        ),
-      },
-      {
-        path: 'profile',
-        element: (
-          <RoleGate allow={['citizen', 'ngo_admin']}>
-            <Profile />
-          </RoleGate>
-        ),
-      },
+
       {
         path: 'ngo/dashboard',
         element: (
@@ -107,6 +71,7 @@ export const router = createBrowserRouter([
           </RoleGate>
         ),
       },
+
       { path: '*', element: notFoundElement },
     ],
   },

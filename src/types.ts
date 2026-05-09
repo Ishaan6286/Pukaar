@@ -45,6 +45,10 @@ export interface Ngo {
   logoUrl: string
   verified: boolean
   adminUids: string[]
+  hours?: string
+  establishedYear?: number
+  volunteerCount?: number
+  website?: string
 }
 
 export interface ReportAI {

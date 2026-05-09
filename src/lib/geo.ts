@@ -1,7 +1,7 @@
 import { geohashForLocation, distanceBetween, geohashQueryBounds } from 'geofire-common'
 import { getDocs, query, orderBy, startAt, endAt, where } from 'firebase/firestore'
-import { collections } from './db'
-import { NgoProfile } from '@/types'
+import { collections } from './firestore'
+import type { NgoProfile } from '@/types'
 
 /**
  * Generates a geohash for a given latitude and longitude.
@@ -70,8 +70,8 @@ export async function findNearestNgo(
 
           if (distanceInM <= radiusInM) {
             // Apply category filter if provided
-            if (category && ngo.serviceAreas.length > 0) {
-              if (ngo.serviceAreas.includes(category)) {
+            if (category && ngo.categories && ngo.categories.length > 0) {
+              if (ngo.categories.includes(category)) {
                 matchingNgos.push({ ngo, distance: distanceInKm })
               }
             } else {

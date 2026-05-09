@@ -2,11 +2,11 @@ import { useState, useEffect, useRef, useMemo } from 'react'
 import { CitizenLayout } from '@/components/Layout'
 import maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
-import { collections, subscribeToQuery } from '@/lib/db'
-import { HelpLocation } from '@/types'
+import { collections, subscribeToQuery } from '@/lib/firestore'
+import type { HelpLocation } from '@/types'
 import { distanceBetween } from 'geofire-common'
 
-const FILTER_TYPES = ['All', 'shelter', 'food_bank', 'hospital', 'police', 'fire_station', 'relief_camp']
+const FILTER_TYPES = ['All', 'shelter', 'food_bank', 'community_kitchen', 'animal_rescue', 'hospital', 'relief_camp']
 
 function formatType(type: string) {
   return type.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
@@ -16,6 +16,8 @@ function getIcon(type: string) {
   const mapping: any = {
     shelter: 'home_work',
     food_bank: 'restaurant',
+    community_kitchen: 'soup_kitchen',
+    animal_rescue: 'pets',
     hospital: 'local_hospital',
     police: 'local_police',
     fire_station: 'fire_truck',
@@ -28,6 +30,8 @@ function getColor(type: string) {
   const mapping: any = {
     shelter: 'text-violet-600 bg-violet-100 border-violet-200',
     food_bank: 'text-amber-600 bg-amber-100 border-amber-200',
+    community_kitchen: 'text-orange-600 bg-orange-100 border-orange-200',
+    animal_rescue: 'text-emerald-600 bg-emerald-100 border-emerald-200',
     hospital: 'text-rose-600 bg-rose-100 border-rose-200',
     police: 'text-blue-600 bg-blue-100 border-blue-200',
     fire_station: 'text-red-600 bg-red-100 border-red-200',
@@ -40,6 +44,8 @@ function getHexColor(type: string) {
   const mapping: any = {
     shelter: '#7C3AED',
     food_bank: '#D97706',
+    community_kitchen: '#EA580C',
+    animal_rescue: '#059669',
     hospital: '#E11D48',
     police: '#2563EB',
     fire_station: '#DC2626',
@@ -165,7 +171,7 @@ export default function HelpMap() {
 
       const marker = new maplibregl.Marker(el)
         .setLngLat([loc.location.lng, loc.location.lat])
-        .addTo(map.current)
+        .addTo(map.current!)
 
       markersRef.current[loc.id!] = marker
     })

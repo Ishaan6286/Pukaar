@@ -1,14 +1,14 @@
 import { useState, useRef, useEffect } from 'react'
 import { getSupportedMimeType, blobToBase64, formatRecordingTime } from '@/lib/audio'
-import { uploadFile } from '@/lib/storage'
 
 export interface VoiceRecorderProps {
-  onUploadComplete?: (storageUrl: string, base64Audio: string) => void
+  /** Called when the user confirms their recording. base64Audio is raw base64 (no data: prefix). */
+  onRecordComplete?: (base64Audio: string) => void
   onCancel?: () => void
   className?: string
 }
 
-export default function VoiceRecorder({ onUploadComplete, onCancel, className = '' }: VoiceRecorderProps) {
+export default function VoiceRecorder({ onRecordComplete, onCancel, className = '' }: VoiceRecorderProps) {
   // State
   const [isRecording, setIsRecording] = useState(false)
   const [isPaused, setIsPaused] = useState(false)
@@ -16,8 +16,6 @@ export default function VoiceRecorder({ onUploadComplete, onCancel, className = 
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null)
   const [audioUrl, setAudioUrl] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [isUploading, setIsUploading] = useState(false)
-  const [uploadProgress, setUploadProgress] = useState(0)
 
   // Refs
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
@@ -151,31 +149,18 @@ export default function VoiceRecorder({ onUploadComplete, onCancel, className = 
     }
   }
 
-  const handleUpload = async () => {
+  const handleConfirmAudio = async () => {
     if (!audioBlob) return
-
-    setIsUploading(true)
     setError(null)
     try {
-      // 1. Convert to Base64 for Gemini
+      // Convert to base64 for Gemini — audio is NOT stored, just passed to AI
       const base64Audio = await blobToBase64(audioBlob)
-      
-      // 2. Upload to Firebase Storage
-      // Create a File object from Blob for better metadata
-      const fileExt = audioBlob.type.includes('mp4') ? 'mp4' : 'webm'
-      const file = new File([audioBlob], `voice_report_${Date.now()}.${fileExt}`, { type: audioBlob.type })
-      
-      const storageUrl = await uploadFile(file, 'reports/audio/', (progress) => {
-        setUploadProgress(progress)
-      })
-
-      if (onUploadComplete) {
-        onUploadComplete(storageUrl, base64Audio)
+      if (onRecordComplete) {
+        onRecordComplete(base64Audio)
       }
     } catch (err) {
-      console.error('Upload failed:', err)
-      setError('Failed to upload audio. Please try again.')
-      setIsUploading(false)
+      console.error('Audio conversion failed:', err)
+      setError('Failed to process audio. Please try again.')
     }
   }
 
@@ -325,36 +310,22 @@ export default function VoiceRecorder({ onUploadComplete, onCancel, className = 
             className="w-full mb-6 outline-none" 
           />
 
-          {isUploading ? (
-            <div className="space-y-3">
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Uploading secure audio...</span>
-                <span className="font-medium text-primary">{Math.round(uploadProgress)}%</span>
-              </div>
-              <div className="w-full h-2 bg-accent rounded-full overflow-hidden">
-                <div 
-                  className="h-full bg-primary transition-all duration-300"
-                  style={{ width: `${uploadProgress}%` }}
-                ></div>
-              </div>
-            </div>
-          ) : (
-            <div className="flex items-center gap-3">
-              <button 
+
+          <div className="flex items-center gap-3">
+              <button
                 onClick={discardRecording}
                 className="flex-1 px-4 py-2.5 rounded-lg border border-border bg-white text-muted-foreground font-medium hover:bg-accent transition-colors"
               >
                 Discard
               </button>
-              <button 
-                onClick={handleUpload}
+              <button
+                onClick={handleConfirmAudio}
                 className="flex-[2] flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-primary-foreground font-semibold hover:bg-primary/90 transition-all active:scale-[0.98] shadow-md shadow-primary/20"
               >
-                <span className="material-icons text-base">cloud_upload</span>
+                <span className="material-icons text-base">check</span>
                 Use this Recording
               </button>
             </div>
-          )}
         </div>
       )}
 

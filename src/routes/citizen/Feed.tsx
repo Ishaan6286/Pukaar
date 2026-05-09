@@ -1,10 +1,10 @@
 import { useState, useEffect, useMemo } from 'react'
 import { CitizenLayout } from '@/components/Layout'
-import { collections, subscribeToQuery, getTypedDoc } from '@/lib/db'
+import { collections, subscribeToQuery, getDocument } from '@/lib/firestore'
 import type { CommunityPost, NgoProfile, PostType } from '@/types'
 import { togglePostRsvp } from '@/lib/feed'
 import { useAuth } from '@/hooks/useAuth'
-import { orderBy, limit } from 'firebase/firestore'
+import { orderBy, limit, query, where, onSnapshot } from 'firebase/firestore'
 import { toast } from 'sonner'
 
 const FILTERS = ['All', 'Events', 'Success Stories', 'Urgent Needs', 'Volunteer']
@@ -16,6 +16,23 @@ export default function Feed() {
   const [ngoDict, setNgoDict] = useState<{ [id: string]: NgoProfile }>({})
   const [isLoading, setIsLoading] = useState(true)
   const [activeRsvps, setActiveRsvps] = useState<{ [postId: string]: boolean }>({})
+
+  // Fetch User's RSVPs
+  useEffect(() => {
+    if (!user) {
+      setActiveRsvps({})
+      return
+    }
+    const q = query(collections.rsvps, where('userId', '==', user.uid))
+    const unsub = onSnapshot(q, (snap) => {
+      const rsvpMap: { [postId: string]: boolean } = {}
+      snap.forEach(doc => {
+        rsvpMap[doc.data().postId] = true
+      })
+      setActiveRsvps(rsvpMap)
+    })
+    return () => unsub()
+  }, [user])
 
   // 1. Live Feed Subscription
   useEffect(() => {
@@ -44,7 +61,7 @@ export default function Feed() {
       let updated = false
       for (const id of uniqueNgoIds) {
         if (!newDict[id]) {
-          const ngo = await getTypedDoc<NgoProfile>(collections.ngos, id)
+          const ngo = await getDocument<NgoProfile>(collections.ngos, id)
           if (ngo) {
             newDict[id] = ngo
             updated = true
@@ -97,13 +114,16 @@ export default function Feed() {
       case 'success': return { tag: 'Success Story', tagClass: 'badge-active', icon: 'star' }
       case 'urgent': return { tag: 'Urgent Need', tagClass: 'badge-urgent', icon: 'priority_high' }
       case 'volunteer': return { tag: 'Volunteer', tagClass: 'badge-pending', icon: 'volunteer_activism' }
+      case 'announcement': return { tag: 'Announcement', tagClass: 'badge-tag', icon: 'campaign' }
       default: return { tag: 'Update', tagClass: 'badge-tag', icon: 'article' }
     }
   }
 
   const formatTime = (ts: any) => {
     if (!ts) return 'Just now'
-    const diffMins = Math.floor((Date.now() - ts.toMillis()) / 60000)
+    // Handle both Timestamp and number
+    const timestampMillis = typeof ts === 'number' ? ts : ts.toMillis()
+    const diffMins = Math.floor((Date.now() - timestampMillis) / 60000)
     if (diffMins < 60) return `${diffMins}m ago`
     if (diffMins < 1440) return `${Math.floor(diffMins/60)}h ago`
     return `${Math.floor(diffMins/1440)}d ago`
@@ -185,7 +205,7 @@ export default function Feed() {
                     <div className="flex-1 min-w-0 pt-0.5">
                       <div className="flex items-center gap-1.5">
                         <div className="font-heading font-bold text-sm text-foreground truncate">
-                          {ngo ? ngo.organizationName : 'Verified NGO'}
+                          {ngo ? ngo.ngoName : 'Verified NGO'}
                         </div>
                         {ngo && <span className="material-icons text-primary text-[14px]" title="Verified Partner">verified</span>}
                       </div>
@@ -196,10 +216,10 @@ export default function Feed() {
                   <h3 className="font-heading font-bold text-base text-foreground leading-snug">{post.title}</h3>
                 </div>
 
-                {/* Media Gallery */}
-                {post.mediaUrls && post.mediaUrls.length > 0 && (
+                {/* Media — base64 data URL stored inline in Firestore */}
+                {post.photoDataUrl && (
                   <div className="w-full h-48 bg-muted/30 border-b border-border/60">
-                    <img src={post.mediaUrls[0]} alt="Post attachment" className="w-full h-full object-cover" />
+                    <img src={post.photoDataUrl} alt="Post attachment" className="w-full h-full object-cover" />
                   </div>
                 )}
 
@@ -240,7 +260,10 @@ export default function Feed() {
                     <span className="material-icons text-[18px]">
                       {isSupported ? 'favorite' : 'favorite_border'}
                     </span>
-                    <span className="font-medium">{isSupported ? 'Supported' : 'Support'}</span>
+                    <span className="font-medium">
+                      {isSupported ? 'Supported' : 'Support'}
+                      {post.engagementCount && post.engagementCount > 0 ? ` (${post.engagementCount})` : ''}
+                    </span>
                   </button>
                   <button className="btn-ghost text-xs flex items-center gap-1.5 px-3 py-1.5 text-muted-foreground">
                     <span className="material-icons text-[18px]">share</span>

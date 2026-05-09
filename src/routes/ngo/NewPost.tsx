@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { NgoLayout } from '@/components/NgoLayout'
 import { createCommunityPost } from '@/lib/feed'
 import { useAuth } from '@/hooks/useAuth'
-import { PostType } from '@/types'
-import ImageUploader from '@/components/ImageUploader'
+import type { PostType, NgoProfile } from '@/types'
+import ImagePicker from '@/components/ImagePicker'
 
 const POST_TYPES: { id: PostType; icon: string; label: string }[] = [
   { id: 'event', icon: 'event', label: 'Local Event' },
@@ -15,35 +15,36 @@ const POST_TYPES: { id: PostType; icon: string; label: string }[] = [
 
 export default function NewPost() {
   const navigate = useNavigate()
-  const { user } = useAuth()
+  const { profile } = useAuth()
+  const ngoProfile = profile as NgoProfile | null
   
   const [postType, setPostType] = useState<PostType>('event')
   const [title, setTitle] = useState('')
   const [body, setBody] = useState('')
-  const [mediaUrls, setMediaUrls] = useState<string[]>([])
+  // photoDataUrl: base64 data URL stored inline in Firestore — no Firebase Storage
+  const [photoDataUrl, setPhotoDataUrl] = useState<string | undefined>(undefined)
   
   // Optional fields
   const [metrics, setMetrics] = useState('')
   const [fundedPercentage, setFundedPercentage] = useState('')
   
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [showUploader, setShowUploader] = useState(false)
+  const [showPicker, setShowPicker] = useState(false)
 
   const handlePublish = async () => {
-    if (!user?.ngoId || !title || !body) return
+    if (!ngoProfile?.ngoId || !title || !body) return
     setIsSubmitting(true)
     try {
       await createCommunityPost(
-        user.ngoId,
+        ngoProfile!.ngoId,
         postType,
         title,
         body,
-        mediaUrls,
+        photoDataUrl,
         metrics || undefined,
         fundedPercentage ? parseInt(fundedPercentage) : undefined
       )
-      // Navigate to dashboard or feed after success
-      navigate('/ngo/dashboard')
+      navigate('/dashboard/ngo')
     } catch (err) {
       console.error(err)
       alert("Failed to publish post.")
@@ -128,40 +129,39 @@ export default function NewPost() {
               </div>
             )}
 
-            {/* Image upload */}
+            {/* Image attachment — base64 inline, no Storage */}
             <div>
-              <label className="block text-sm font-semibold text-white mb-2">Attach Media (optional)</label>
+              <label className="block text-sm font-semibold text-white mb-2">Attach Photo (optional)</label>
               
-              {mediaUrls.length > 0 ? (
-                <div className="flex gap-2 mb-3">
-                  {mediaUrls.map((url, i) => (
-                    <div key={i} className="relative w-24 h-24 rounded-lg overflow-hidden border border-white/20">
-                      <img src={url} className="w-full h-full object-cover" alt="Attachment" />
-                    </div>
-                  ))}
-                  <button onClick={() => setShowUploader(true)} className="w-24 h-24 rounded-lg border border-dashed border-white/20 flex flex-col items-center justify-center text-white/40 hover:bg-white/5 hover:text-white/80 transition-colors">
-                    <span className="material-icons">add</span>
-                    <span className="text-[10px] mt-1">Add More</span>
+              {photoDataUrl ? (
+                <div className="flex items-start gap-3">
+                  <div className="relative w-24 h-24 rounded-lg overflow-hidden border border-white/20 flex-shrink-0">
+                    <img src={photoDataUrl} className="w-full h-full object-cover" alt="Attachment" />
+                  </div>
+                  <button
+                    onClick={() => setPhotoDataUrl(undefined)}
+                    className="text-xs text-white/40 hover:text-rose-400 transition-colors mt-1"
+                  >
+                    Remove
                   </button>
                 </div>
-              ) : !showUploader ? (
-                <div 
-                  onClick={() => setShowUploader(true)}
+              ) : !showPicker ? (
+                <div
+                  onClick={() => setShowPicker(true)}
                   className="border-2 border-dashed border-white/10 rounded-xl p-6 text-center hover:border-primary/40 transition-colors cursor-pointer bg-white/5"
                 >
-                  <span className="material-icons text-3xl text-white/20 mb-2">cloud_upload</span>
-                  <div className="text-xs text-white/40">Click to upload an image</div>
+                  <span className="material-icons text-3xl text-white/20 mb-2">add_photo_alternate</span>
+                  <div className="text-xs text-white/40">Click to attach a photo</div>
                 </div>
               ) : null}
 
-              {showUploader && (
+              {showPicker && !photoDataUrl && (
                 <div className="mt-2">
-                  <ImageUploader 
-                    storagePath={`posts/${user?.ngoId}/`}
-                    onCancel={() => setShowUploader(false)}
-                    onUploadComplete={(url) => {
-                      setMediaUrls(prev => [...prev, url])
-                      setShowUploader(false)
+                  <ImagePicker
+                    onCancel={() => setShowPicker(false)}
+                    onPickComplete={(dataUrl) => {
+                      setPhotoDataUrl(dataUrl)
+                      setShowPicker(false)
                     }}
                   />
                 </div>
@@ -171,10 +171,10 @@ export default function NewPost() {
 
           {/* Actions */}
           <div className="flex gap-3 justify-end">
-            <button 
+            <button
               disabled={isSubmitting}
-              className="px-4 py-2.5 rounded-lg bg-white/5 border border-white/10 text-sm font-medium text-white/50 hover:bg-white/10 transition-colors disabled:opacity-50" 
-              onClick={() => navigate('/ngo/dashboard')}
+              className="px-4 py-2.5 rounded-lg bg-white/5 border border-white/10 text-sm font-medium text-white/50 hover:bg-white/10 transition-colors disabled:opacity-50"
+              onClick={() => navigate('/dashboard/ngo')}
             >
               Cancel
             </button>

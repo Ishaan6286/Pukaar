@@ -1,4 +1,5 @@
-import { createBrowserRouter, Outlet } from 'react-router-dom'
+import { createBrowserRouter, Outlet, Navigate } from 'react-router-dom'
+import { useAuth } from '@/hooks/useAuth'
 
 import App from '@/App'
 import Home from '@/routes/citizen/Home'
@@ -11,9 +12,21 @@ import Dashboard from '@/routes/ngo/Dashboard'
 import ReportDetail from '@/routes/ngo/ReportDetail'
 import NewPost from '@/routes/ngo/NewPost'
 import Login from '@/routes/Login'
-
 import ProtectedRoute from '@/components/ProtectedRoute'
 import RoleGate from '@/components/RoleGate'
+import AdminDashboard from '@/routes/admin/AdminDashboard'
+
+function RootRedirect() {
+  const { profile, isAuthenticated, isLoading } = useAuth()
+  
+  if (isLoading) return null
+  
+  if (!isAuthenticated || !profile) {
+    return <Navigate to="/login/user" replace />
+  }
+
+  return <Navigate to={`/dashboard/${profile.role}`} replace />
+}
 
 function NotFound() {
   return (
@@ -26,18 +39,22 @@ function NotFound() {
 
 export const router = createBrowserRouter([
   {
-    path: '/login',
+    path: '/',
+    element: <RootRedirect />,
+  },
+  {
+    path: '/login/:roleType',
     element: <Login />,
   },
   {
-    path: '/',
+    path: '/dashboard',
     element: <App />,
     children: [
       {
-        // Citizen routes
+        path: 'user',
         element: (
           <ProtectedRoute>
-            <RoleGate allow={['citizen', 'admin']}>
+            <RoleGate allow={['user']}>
               <Outlet />
             </RoleGate>
           </ProtectedRoute>
@@ -52,19 +69,33 @@ export const router = createBrowserRouter([
         ]
       },
       {
-        // NGO Routes
         path: 'ngo',
         element: (
           <ProtectedRoute>
-            <RoleGate allow={['ngo', 'admin']}>
+            <RoleGate allow={['ngo']}>
               <Outlet />
             </RoleGate>
           </ProtectedRoute>
         ),
         children: [
-          { path: 'dashboard', element: <Dashboard /> },
+          { index: true, element: <Dashboard /> },
+          { path: 'reports', element: <Dashboard /> },
           { path: 'reports/:reportId', element: <ReportDetail /> },
           { path: 'posts/new', element: <NewPost /> },
+          { path: 'map', element: <HelpMap /> }, // added for /dashboard/ngo/map in NgoLayout
+        ]
+      },
+      {
+        path: 'admin',
+        element: (
+          <ProtectedRoute>
+            <RoleGate allow={['admin']}>
+              <Outlet />
+            </RoleGate>
+          </ProtectedRoute>
+        ),
+        children: [
+          { index: true, element: <AdminDashboard /> },
         ]
       },
       { path: '*', element: <NotFound /> },

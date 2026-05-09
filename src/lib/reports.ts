@@ -1,5 +1,6 @@
 import { writeBatch, doc, serverTimestamp, getDoc } from 'firebase/firestore'
-import { db, collections } from './firebase'
+import { db } from './firebase'
+import { collections } from './firestore'
 import { classifyReport } from './gemini'
 import { findNearestNgo, getGeohash } from './geo'
 import type { Report, ReportStatus, NgoProfile } from '@/types'
@@ -8,9 +9,10 @@ export interface SubmitReportInput {
   userId: string
   description: string
   location: { lat: number; lng: number; address: string }
-  base64Image?: string
+  /** Full base64 data URL (data:image/jpeg;base64,...) from the imageResize helper. */
+  photoDataUrl?: string
+  /** Raw base64 audio bytes — passed to Gemini, then discarded. Never persisted. */
   base64Audio?: string
-  mediaUrls: string[] // Storage URLs returned from previous upload steps
   onProgress?: (status: string) => void
 }
 
@@ -29,7 +31,10 @@ export interface SubmitReportResult {
  * 4. Executes atomic Firestore batch write
  */
 export async function submitReport(input: SubmitReportInput): Promise<SubmitReportResult> {
-  const { userId, description, location, base64Image, base64Audio, mediaUrls, onProgress } = input
+  const { userId, description, location, photoDataUrl, base64Audio, onProgress } = input
+  
+  // Extract raw base64 from the dataUrl for the Gemini inline call
+  const base64Image = photoDataUrl ? photoDataUrl.split(',')[1] : undefined
   
   try {
     // 1. AI Classification with Retry Logic
@@ -76,7 +81,7 @@ export async function submitReport(input: SubmitReportInput): Promise<SubmitRepo
         ...location,
         geohash
       },
-      mediaUrls,
+      photoDataUrl: photoDataUrl ?? undefined,
       assignedNgoId: nearestNgo?.id || null,
       aiClassification: {
         category: aiClassification.category,
@@ -112,7 +117,7 @@ export async function submitReport(input: SubmitReportInput): Promise<SubmitRepo
     if (nearestNgo) {
       createTimelineEvent(
         'under_review', 
-        `Matched with ${nearestNgo.organizationName} based on category and location.`, 
+        `Matched with ${nearestNgo.ngoName} based on category and location.`, 
         'system'
       )
     }

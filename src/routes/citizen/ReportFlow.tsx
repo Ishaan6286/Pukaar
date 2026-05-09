@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { CitizenLayout } from '@/components/Layout'
 import VoiceRecorder from '@/components/VoiceRecorder'
-import ImageUploader from '@/components/ImageUploader'
+import ImagePicker from '@/components/ImagePicker'
 import { submitReport } from '@/lib/reports'
 import { useAuth } from '@/hooks/useAuth'
 import { toast } from 'sonner'
@@ -26,8 +26,8 @@ export default function ReportFlow() {
   // Form State
   const [description, setDescription] = useState('')
   const [base64Audio, setBase64Audio] = useState<string | undefined>(undefined)
-  const [base64Image, setBase64Image] = useState<string | undefined>(undefined)
-  const [mediaUrls, setMediaUrls] = useState<string[]>([])
+  // photoDataUrl is the full data:image/jpeg;base64,... — stored in Firestore
+  const [photoDataUrl, setPhotoDataUrl] = useState<string | undefined>(undefined)
   
   // Geolocation
   const [location, setLocation] = useState<{ lat: number, lng: number, address: string } | null>(null)
@@ -58,26 +58,17 @@ export default function ReportFlow() {
           })
           setIsLocating(false)
         },
-        (error) => {
-          console.error("Error getting location:", error)
+        (err) => {
+          console.error("Error getting location:", err)
           // Fallback location for demo purposes
-          setLocation({ lat: 28.6139, lng: 77.2090, address: 'Sector 4, Downtown (Fallback)' })
+          setLocation({ lat: 12.9716, lng: 77.5946, address: 'Bengaluru, Karnataka (Fallback)' })
           setIsLocating(false)
         }
       )
     } else {
-      setLocation({ lat: 28.6139, lng: 77.2090, address: 'Sector 4, Downtown (Fallback)' })
+      setLocation({ lat: 12.9716, lng: 77.5946, address: 'Bengaluru, Karnataka (Fallback)' })
       setIsLocating(false)
     }
-  }
-
-  const handleUploadComplete = (storageUrl: string, base64: string, type: 'voice' | 'photo') => {
-    if (type === 'voice') setBase64Audio(base64)
-    if (type === 'photo') setBase64Image(base64)
-    
-    setMediaUrls(prev => [...prev, storageUrl])
-    setStep('details')
-    toast.success('Media successfully processed')
   }
 
   const handleSubmit = async () => {
@@ -95,8 +86,7 @@ export default function ReportFlow() {
         description,
         location,
         base64Audio,
-        base64Image,
-        mediaUrls,
+        photoDataUrl,
         onProgress: (status) => setProgressText(status)
       })
 
@@ -104,7 +94,7 @@ export default function ReportFlow() {
 
       // Ensure we see the success state briefly
       setTimeout(() => {
-        navigate(`/reports/${result.reportId}`)
+        navigate(`/dashboard/user/reports/${result.reportId}`)
       }, 800)
 
     } catch (err: any) {
@@ -158,13 +148,21 @@ export default function ReportFlow() {
           <div className="space-y-4 animate-fade-in-up">
             {method === 'voice' ? (
               <VoiceRecorder 
-                onUploadComplete={(url, b64) => handleUploadComplete(url, b64, 'voice')} 
+                onRecordComplete={(b64Audio) => {
+                  setBase64Audio(b64Audio)
+                  setStep('details')
+                  toast.success('Voice note recorded')
+                }} 
                 onCancel={() => setMethod(null)} 
               />
             ) : method === 'photo' ? (
-              <ImageUploader 
-                onUploadComplete={(url, b64) => handleUploadComplete(url, b64, 'photo')}
-                onCancel={() => setMethod(null)} 
+              <ImagePicker
+                onPickComplete={(dataUrl) => {
+                  setPhotoDataUrl(dataUrl)
+                  setStep('details')
+                  toast.success('Photo attached')
+                }}
+                onCancel={() => setMethod(null)}
               />
             ) : (
               <>
@@ -208,7 +206,7 @@ export default function ReportFlow() {
               />
             </div>
             
-            {(base64Audio || base64Image) && (
+            {(base64Audio || photoDataUrl) && (
               <div className="p-4 bg-accent/50 rounded-xl flex items-center gap-3">
                 <span className="material-icons text-primary">
                   {base64Audio ? 'mic' : 'image'}
@@ -216,6 +214,9 @@ export default function ReportFlow() {
                 <div className="text-sm text-foreground font-medium">
                   {base64Audio ? 'Voice note attached' : 'Photo attached'}
                 </div>
+                {photoDataUrl && (
+                  <img src={photoDataUrl} alt="Attached" className="ml-auto h-12 w-12 rounded-lg object-cover" />
+                )}
                 <span className="material-icons text-teal-500 ml-auto">check_circle</span>
               </div>
             )}
@@ -224,7 +225,7 @@ export default function ReportFlow() {
               <button className="btn-ghost" onClick={() => setStep('method')}>← Back</button>
               <button 
                 className="btn-primary" 
-                disabled={!description && !base64Audio && !base64Image} 
+                disabled={!description && !base64Audio && !photoDataUrl} 
                 onClick={() => setStep('location')}
               >
                 Continue →
@@ -302,12 +303,15 @@ export default function ReportFlow() {
 
                 <div className="flex gap-3 text-sm">
                   <span className="material-icons text-muted-foreground text-lg mt-0.5">attachment</span>
-                  <div>
+                  <div className="flex-1">
                     <div className="text-xs text-muted-foreground font-medium mb-0.5">Attachments</div>
                     <div className="font-medium text-foreground">
-                      {mediaUrls.length > 0 ? `${mediaUrls.length} File(s) Uploaded` : 'None'}
+                      {base64Audio ? 'Voice note' : photoDataUrl ? 'Photo' : 'None'}
                     </div>
                   </div>
+                  {photoDataUrl && (
+                    <img src={photoDataUrl} alt="Attached" className="h-16 w-16 rounded-lg object-cover border border-border" />
+                  )}
                 </div>
               </div>
             </div>

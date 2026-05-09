@@ -3,11 +3,11 @@ import { useAuth } from '@/hooks/useAuth'
 import { signOut } from '@/lib/auth'
 
 const citizenNavItems = [
-  { icon: 'home', label: 'Home', to: '/' },
-  { icon: 'add_circle', label: 'Report', to: '/report' },
-  { icon: 'explore', label: 'Map', to: '/map' },
-  { icon: 'forum', label: 'Feed', to: '/feed' },
-  { icon: 'person', label: 'Profile', to: '/profile' },
+  { icon: 'home', label: 'Home', to: '/dashboard/user' },
+  { icon: 'add_circle', label: 'Report', to: '/dashboard/user/report' },
+  { icon: 'explore', label: 'Map', to: '/dashboard/user/map' },
+  { icon: 'forum', label: 'Feed', to: '/dashboard/user/feed' },
+  { icon: 'person', label: 'Profile', to: '/dashboard/user/profile' },
 ]
 
 export function TopNav() {
@@ -18,20 +18,17 @@ export function TopNav() {
     <header className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-md border-b border-border">
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-            <span className="material-icons text-white text-lg">favorite</span>
-          </div>
-          <span className="font-heading font-bold text-lg text-foreground tracking-tight">Pukaar</span>
+        <Link to="/dashboard/user" className="flex items-center gap-2">
+          <img src="/logo.png" alt="Pukaar Logo" className="w-8 h-8 object-contain" />
         </Link>
 
         {/* Desktop nav */}
         <nav className="hidden md:flex items-center gap-1">
           {[
-            { label: 'Home', to: '/' },
-            { label: 'Reporting', to: '/report' },
-            { label: 'Impact', to: '/feed' },
-            { label: 'Map', to: '/map' },
+            { label: 'Home', to: '/dashboard/user' },
+            { label: 'Reporting', to: '/dashboard/user/report' },
+            { label: 'Impact', to: '/dashboard/user/feed' },
+            { label: 'Map', to: '/dashboard/user/map' },
           ].map(n => (
             <Link
               key={n.to}
@@ -50,7 +47,7 @@ export function TopNav() {
         {/* CTA */}
         <div className="hidden md:flex items-center gap-3">
           {profile?.role === 'ngo' && (
-            <Link to="/ngo/dashboard" className="btn-ghost text-xs">
+            <Link to="/dashboard/ngo" className="btn-ghost text-xs">
               NGO Portal →
             </Link>
           )}
@@ -58,7 +55,7 @@ export function TopNav() {
             <span className="material-icons text-sm">logout</span>
             Sign Out
           </button>
-          <Link to="/report" className="btn-primary text-xs">
+          <Link to="/dashboard/user/report" className="btn-primary text-xs">
             <span className="flex items-center gap-1">
               <span className="material-icons text-sm">add</span>
               Report Issue

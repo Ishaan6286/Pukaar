@@ -14,22 +14,22 @@ service cloud.firestore {
       return isAuthenticated() && request.auth.uid == userId;
     }
     
-    // Check if the user is an admin for a specific NGO
+    // In the new architecture, an NGO is its own authentication entity. 
+    // The NGO's UID is the document ID in the 'ngos' collection.
     function isNgoAdmin(ngoId) {
       return isAuthenticated() && 
-             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.ngoId == ngoId;
+             request.auth.uid == ngoId &&
+             exists(/databases/$(database)/documents/ngos/$(request.auth.uid));
     }
     
-    // General check if user is any NGO admin
     function isAnyNgoAdmin() {
       return isAuthenticated() && 
-             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'ngo_admin';
+             exists(/databases/$(database)/documents/ngos/$(request.auth.uid));
     }
 
-    // Check if user is a system admin
     function isSystemAdmin() {
       return isAuthenticated() && 
-             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+             exists(/databases/$(database)/documents/admins/$(request.auth.uid));
     }
 
     // -------------------------------------------------------------------------
@@ -43,35 +43,36 @@ service cloud.firestore {
       // Users can create/update their own profile
       allow create: if isOwner(userId);
       
-      // Prevent privilege escalation by restricting updates to role/ngoId fields
-      allow update: if isOwner(userId) && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'ngoId']);
+      // Prevent privilege escalation
+      allow update: if isOwner(userId) && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'trustScore', 'status']);
       allow delete: if isSystemAdmin();
     }
     
     // NGOs Collection
     match /ngos/{ngoId} {
-      allow read: if isAuthenticated(); // Anyone can read NGOs (required for Maps and routing)
-      allow create: if isSystemAdmin(); // Only system admins create NGOs
-      allow update: if isSystemAdmin() || isNgoAdmin(ngoId); // NGO admins update their own org
+      allow read: if isAuthenticated(); 
+      allow create: if isSystemAdmin(); 
+      allow update: if isSystemAdmin() || isNgoAdmin(ngoId); 
       allow delete: if isSystemAdmin();
+    }
+
+    // Admins Collection
+    match /admins/{adminId} {
+      allow read: if isSystemAdmin();
+      allow create, update, delete: if false; // Managed manually via Firebase console or superadmin scripts
     }
     
     // Reports Collection
     match /reports/{reportId} {
-      // Citizens can read their own. NGOs can read all (to find nearby unassigned reports)
       allow read: if isAuthenticated() && (resource.data.userId == request.auth.uid || isAnyNgoAdmin() || isSystemAdmin());
       
-      // Any authenticated user can create a report, but they must set themselves as the owner
       allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
       
-      // Update logic: 
-      // - Citizens can update their own
-      // - Assigned NGO admins can update status
-      // - Any NGO admin can update an unassigned report (to accept it)
       allow update: if isAuthenticated() && (
         (resource.data.userId == request.auth.uid) || 
         (resource.data.assignedNgoId != null && isNgoAdmin(resource.data.assignedNgoId)) ||
-        (resource.data.assignedNgoId == null && isAnyNgoAdmin())
+        (resource.data.assignedNgoId == null && isAnyNgoAdmin()) ||
+        isSystemAdmin()
       );
       
       allow delete: if isSystemAdmin();
@@ -79,15 +80,14 @@ service cloud.firestore {
     
     // Timeline Events
     match /timeline_events/{eventId} {
-      allow read: if isAuthenticated(); // Needed for Citizens and NGOs to track history
-      allow create: if isAuthenticated(); // Server/Clients create events during status transitions
-      allow update, delete: if isSystemAdmin(); // Events should be immutable append-only logs
+      allow read: if isAuthenticated(); 
+      allow create: if isAuthenticated(); 
+      allow update, delete: if isSystemAdmin(); 
     }
 
-    // Help Locations (Realtime Map)
+    // Help Locations
     match /help_locations/{locationId} {
       allow read: if isAuthenticated();
-      // Any verified NGO admin can register a relief camp/shelter
       allow create, update: if isAnyNgoAdmin() || isSystemAdmin();
       allow delete: if isSystemAdmin();
     }
@@ -95,7 +95,6 @@ service cloud.firestore {
     // NGO Community Feed Posts
     match /posts/{postId} {
       allow read: if isAuthenticated();
-      // Only NGO admins can create posts, and they must tie it to their own NGO
       allow create: if isNgoAdmin(request.resource.data.ngoId);
       allow update, delete: if isNgoAdmin(resource.data.ngoId) || isSystemAdmin();
     }
@@ -103,7 +102,6 @@ service cloud.firestore {
     // Post RSVPs / Support
     match /rsvps/{rsvpId} {
       allow read: if isAuthenticated();
-      // Users can only RSVP for themselves
       allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
       allow update, delete: if isOwner(resource.data.userId) || isSystemAdmin();
     }

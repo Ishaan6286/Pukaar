@@ -2,10 +2,10 @@ import { useState, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { NgoLayout } from '@/components/NgoLayout'
 import { useAuth } from '@/hooks/useAuth'
-import { collections, subscribeToQuery } from '@/lib/db'
+import { collections, subscribeToQuery } from '@/lib/firestore'
 import { where } from 'firebase/firestore'
 import { acceptReport, resolveReport } from '@/lib/reports'
-import type { Report } from '@/types'
+import type { Report, NgoProfile } from '@/types'
 import { toast } from 'sonner'
 
 const ACTIVITY = [
@@ -15,6 +15,7 @@ const ACTIVITY = [
 
 export default function Dashboard() {
   const { profile } = useAuth()
+  const ngoProfile = profile as NgoProfile | null
   const [reports, setReports] = useState<Report[]>([])
   const [selectedReportId, setSelectedReportId] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -22,12 +23,12 @@ export default function Dashboard() {
 
   // 1. Realtime Firestore Subscription
   useEffect(() => {
-    if (!profile?.ngoId) return
+    if (!ngoProfile?.ngoId) return
 
     // Subscribe to ALL reports assigned to this NGO to calculate accurate stats
     const unsubscribe = subscribeToQuery<Report>(
       collections.reports,
-      [where('assignedNgoId', '==', profile.ngoId)],
+      [where('assignedNgoId', '==', ngoProfile.ngoId)],
       (data) => {
         setReports(data)
         setIsLoading(false)
@@ -45,7 +46,7 @@ export default function Dashboard() {
     )
 
     return () => unsubscribe()
-  }, [profile?.ngoId]) // Omit selectedReportId from deps to prevent overriding user selection
+  }, [ngoProfile?.ngoId]) // Omit selectedReportId from deps to prevent overriding user selection
 
   // 2. Data Processing & Sorting
   const activeReports = useMemo(() => {
@@ -57,7 +58,9 @@ export default function Dashboard() {
     return active.sort((a, b) => {
       const uDiff = weight[b.urgency] - weight[a.urgency]
       if (uDiff !== 0) return uDiff
-      return (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0)
+      const getMs = (ts: number | { toMillis(): number } | undefined) =>
+        !ts ? 0 : typeof ts === 'number' ? ts : ts.toMillis()
+      return getMs(b.createdAt) - getMs(a.createdAt)
     })
   }, [reports])
 
@@ -67,11 +70,11 @@ export default function Dashboard() {
 
   // 3. Actions
   const handleAccept = async (reportId: string) => {
-    if (!profile?.ngoId) return
+    if (!ngoProfile?.ngoId) return
     setIsProcessing(true)
     const toastId = toast.loading('Dispatching team...')
     try {
-      await acceptReport(reportId, profile.ngoId)
+      await acceptReport(reportId, ngoProfile!.ngoId)
       toast.success('Team dispatched successfully', { id: toastId })
     } catch (err: any) {
       console.error(err)
@@ -81,11 +84,11 @@ export default function Dashboard() {
   }
 
   const handleResolve = async (reportId: string) => {
-    if (!profile?.ngoId) return
+    if (!ngoProfile?.ngoId) return
     setIsProcessing(true)
     const toastId = toast.loading('Marking report as resolved...')
     try {
-      await resolveReport(reportId, profile.ngoId)
+      await resolveReport(reportId, ngoProfile!.ngoId)
       setSelectedReportId(null) // Unselect to prevent actions on resolved
       toast.success('Report resolved', { id: toastId })
     } catch (err: any) {
@@ -103,8 +106,6 @@ export default function Dashboard() {
     if (diffMins < 60) return `${diffMins}m ago`
     return `${Math.floor(diffMins/60)}h ago`
   }
-
-  const isAudioFile = (url: string) => url.includes('.webm') || url.includes('.mp4') || url.includes('audio')
 
   return (
     <NgoLayout>
@@ -223,20 +224,14 @@ export default function Dashboard() {
                 {selectedReportId === r.id && (
                   <div className="mt-4 pt-4 border-t border-white/10 space-y-4">
                     
-                    {/* Media Previews */}
-                    {r.mediaUrls && r.mediaUrls.length > 0 && (
-                      <div className="flex gap-2">
-                        {r.mediaUrls.map((url, idx) => (
-                          <div key={idx} className="w-1/2">
-                            {isAudioFile(url) ? (
-                              <audio controls src={url} className="w-full h-8" />
-                            ) : (
-                              <a href={url} target="_blank" rel="noreferrer" className="block w-full h-24 bg-black/50 rounded-lg overflow-hidden border border-white/10 hover:border-primary/50 transition-colors">
-                                <img src={url} className="w-full h-full object-cover opacity-80 hover:opacity-100" alt="Attachment" />
-                              </a>
-                            )}
-                          </div>
-                        ))}
+                    {/* Photo — base64 data URL stored inline in Firestore */}
+                    {r.photoDataUrl && (
+                      <div className="rounded-lg overflow-hidden border border-white/10 max-h-48">
+                        <img
+                          src={r.photoDataUrl}
+                          className="w-full h-full object-cover opacity-80 hover:opacity-100 transition-opacity"
+                          alt="Report photo"
+                        />
                       </div>
                     )}
 

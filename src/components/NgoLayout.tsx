@@ -1,15 +1,16 @@
 import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
+import type { NgoProfile } from '@/types'
 import { signOut } from '@/lib/auth'
 
 const sidebarItems = [
-  { icon: 'dashboard', label: 'NGO Dashboard', to: '/ngo/dashboard' },
-  { icon: 'assignment', label: 'Reports', to: '/ngo/reports' },
-  { icon: 'location_on', label: 'Help Map', to: '/map' },
-  { icon: 'groups', label: 'Community Feed', to: '/feed' },
-  { icon: 'monitoring', label: 'Analytics', to: '/ngo/analytics' },
-  { icon: 'help_outline', label: 'Support', to: '/ngo/support' },
-  { icon: 'settings', label: 'Settings', to: '/ngo/settings' },
+  { icon: 'dashboard', label: 'NGO Dashboard', to: '/dashboard/ngo' },
+  { icon: 'assignment', label: 'Reports', to: '/dashboard/ngo/reports' },
+  { icon: 'location_on', label: 'Help Map', to: '/dashboard/user/map' },
+  { icon: 'groups', label: 'Community Feed', to: '/dashboard/user/feed' },
+  { icon: 'monitoring', label: 'Analytics', to: '/dashboard/ngo/analytics' },
+  { icon: 'help_outline', label: 'Support', to: '/dashboard/ngo/support' },
+  { icon: 'settings', label: 'Settings', to: '/dashboard/ngo/settings' },
 ]
 
 export function NgoLayout({ children }: { children: React.ReactNode }) {
@@ -23,9 +24,7 @@ export function NgoLayout({ children }: { children: React.ReactNode }) {
         {/* Logo */}
         <div className="h-16 flex items-center px-5 border-b border-white/10">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-md bg-primary/80 flex items-center justify-center">
-              <span className="material-icons text-white text-base">favorite</span>
-            </div>
+            <img src="/logo.png" alt="Pukaar Logo" className="w-8 h-8 object-contain" />
             <div>
               <div className="font-heading font-bold text-sm text-white">NGO Portal</div>
               <div className="text-[10px] text-white/50 leading-none">Operation Center</div>
@@ -56,7 +55,7 @@ export function NgoLayout({ children }: { children: React.ReactNode }) {
 
         {/* Footer */}
         <div className="px-4 py-4 border-t border-white/10 space-y-2">
-          <Link to="/" className="flex items-center gap-2 text-xs text-white/40 hover:text-white/70 transition-colors py-1.5">
+          <Link to="/dashboard/user" className="flex items-center gap-2 text-xs text-white/40 hover:text-white/70 transition-colors py-1.5">
             <span className="material-icons text-sm">arrow_back</span>
             Back to Citizen View
           </Link>
@@ -72,7 +71,7 @@ export function NgoLayout({ children }: { children: React.ReactNode }) {
         {/* Top bar */}
         <header className="h-16 flex items-center justify-between px-6 border-b border-white/10 bg-[#0f0d14]">
           <div>
-            <h1 className="font-heading font-bold text-base text-white">Pukaar</h1>
+            <img src="/logo.png" alt="Pukaar Logo" className="w-8 h-8 object-contain" />
           </div>
           <div className="flex items-center gap-3">
             <button className="relative p-2 rounded-lg text-white/40 hover:bg-white/5 hover:text-white transition-colors">
@@ -81,14 +80,14 @@ export function NgoLayout({ children }: { children: React.ReactNode }) {
             </button>
             <div className="flex items-center gap-2 pl-2 border-l border-white/10">
               <div className="text-right hidden sm:block">
-                <div className="text-xs font-medium text-white">{profile?.displayName || 'Admin'}</div>
+                <div className="text-xs font-medium text-white">{(profile as NgoProfile)?.ngoName || 'Admin'}</div>
                 <div className="text-[10px] text-white/40">NGO Role</div>
               </div>
               <div className="w-8 h-8 rounded-full bg-primary/30 flex items-center justify-center text-primary text-sm font-bold overflow-hidden">
-                {profile?.photoURL ? (
-                  <img src={profile.photoURL} alt="Avatar" className="w-full h-full object-cover" />
+                {(profile as NgoProfile)?.logoUrl ? (
+                  <img src={(profile as NgoProfile).logoUrl} alt="Avatar" className="w-full h-full object-cover" />
                 ) : (
-                  profile?.displayName?.charAt(0) || 'N'
+                  (profile as NgoProfile)?.ngoName?.charAt(0) || 'N'
                 )}
               </div>
             </div>

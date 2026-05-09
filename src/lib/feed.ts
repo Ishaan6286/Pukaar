@@ -1,6 +1,6 @@
-import { collections, addTypedDoc, updateTypedDoc } from './db'
-import { PostType, RsvpStatus, Rsvp } from '@/types'
-import { query, where, getDocs, deleteDoc, doc, serverTimestamp } from 'firebase/firestore'
+import { collections, addDocument } from './firestore'
+import type { PostType, RsvpStatus, CommunityPost } from '@/types'
+import { query, where, getDocs, doc, runTransaction } from 'firebase/firestore'
 import { db } from './firebase'
 
 /**
@@ -11,24 +11,26 @@ export async function createCommunityPost(
   type: PostType, 
   title: string, 
   body: string, 
-  mediaUrls: string[] = [],
+  photoDataUrl?: string,
   metrics?: string,
   fundedPercentage?: number
 ) {
-  return await addTypedDoc(collections.posts, {
+  return await addDocument<CommunityPost>(collections.posts, {
     ngoId,
     type,
     title,
     body,
-    mediaUrls,
+    photoDataUrl,
     metrics,
-    fundedPercentage
+    fundedPercentage,
+    engagementCount: 0
   })
 }
 
 /**
  * Toggles an RSVP status for a user on a post.
- * If they click the same status again, it removes their RSVP.
+ * - Uses a transaction to update the engagement count on the post atomically.
+ * - If they click the same status again, it removes their RSVP and decrements count.
  */
 export async function togglePostRsvp(postId: string, userId: string, status: RsvpStatus) {
   const q = query(
@@ -38,27 +40,46 @@ export async function togglePostRsvp(postId: string, userId: string, status: Rsv
   )
   
   const snap = await getDocs(q)
-  
-  if (!snap.empty) {
-    const existingDoc = snap.docs[0]
-    const currentStatus = existingDoc.data().status
+  const existingDoc = snap.empty ? null : snap.docs[0]
+
+  await runTransaction(db, async (transaction) => {
+    const postRef = doc(db, 'posts', postId)
+    const postSnap = await transaction.get(postRef)
     
-    if (currentStatus === status) {
-      // Remove RSVP if clicking the active state
-      await deleteDoc(doc(db, 'rsvps', existingDoc.id))
-      return null
-    } else {
-      // Update to new status
-      await updateTypedDoc(collections.rsvps, existingDoc.id, { status })
-      return status
+    if (!postSnap.exists()) {
+      throw new Error("Post does not exist!")
     }
-  } else {
-    // Create new RSVP
-    await addTypedDoc(collections.rsvps, {
-      postId,
-      userId,
-      status
-    })
-    return status
+
+    const currentCount = postSnap.data().engagementCount || 0
+
+    if (existingDoc) {
+      const currentStatus = existingDoc.data().status
+      
+      if (currentStatus === status) {
+        // Remove RSVP
+        transaction.delete(existingDoc.ref)
+        transaction.update(postRef, { engagementCount: Math.max(0, currentCount - 1) })
+      } else {
+        // Change status (engagement count stays the same since they were already engaged)
+        transaction.update(existingDoc.ref, { status, updatedAt: Date.now() })
+      }
+    } else {
+      // Create new RSVP
+      const newRsvpRef = doc(collections.rsvps)
+      transaction.set(newRsvpRef, {
+        postId,
+        userId,
+        status,
+        createdAt: Date.now(),
+        updatedAt: Date.now()
+      })
+      transaction.update(postRef, { engagementCount: currentCount + 1 })
+    }
+  })
+
+  // Return whether it's active or removed based on what happened
+  if (existingDoc && existingDoc.data().status === status) {
+    return null
   }
+  return status
 }

@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { CitizenLayout } from '@/components/Layout'
-import { collections, subscribeToDoc, subscribeToQuery } from '@/lib/db'
+import { collections, subscribeToDoc, subscribeToQuery } from '@/lib/firestore'
 import { where, orderBy } from 'firebase/firestore'
-import { Report, NgoProfile, TimelineEvent } from '@/types'
+import type { Report, NgoProfile, TimelineEvent } from '@/types'
 
 export default function ReportStatus() {
   const { reportId } = useParams<{ reportId: string }>()
@@ -225,7 +225,7 @@ export default function ReportStatus() {
                 <span className="material-icons text-primary text-2xl">corporate_fare</span>
               </div>
               <div className="flex-1 min-w-0">
-                <div className="font-heading font-bold text-foreground truncate">{ngo.organizationName}</div>
+                <div className="font-heading font-bold text-foreground truncate">{ngo.ngoName}</div>
                 <div className="text-xs text-muted-foreground mt-0.5 truncate">{ngo.address}</div>
                 <div className="flex items-center gap-1.5 mt-2">
                   <span className="badge-active">Verified Partner</span>

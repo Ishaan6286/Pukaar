@@ -1,13 +1,15 @@
 import { create } from 'zustand'
-import { User } from 'firebase/auth'
-import { UserProfile } from '@/types'
+import type { User } from 'firebase/auth'
+import type { UserProfile, NgoProfile, AdminProfile } from '@/types'
+
+export type AnyProfile = UserProfile | NgoProfile | AdminProfile
 
 type AuthState = {
   user: User | null
-  profile: UserProfile | null
+  profile: AnyProfile | null
   isLoading: boolean
   setUser: (user: User | null) => void
-  setProfile: (profile: UserProfile | null) => void
+  setProfile: (profile: AnyProfile | null) => void
   setLoading: (isLoading: boolean) => void
   clearAuth: () => void
 }

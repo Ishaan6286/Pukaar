@@ -1,71 +1,80 @@
 import { 
   collection, 
   doc, 
-  getDoc, 
-  getDocs, 
-  addDoc, 
-  updateDoc, 
-  deleteDoc, 
-  query, 
-  where, 
-  orderBy, 
-  limit, 
+  QueryDocumentSnapshot, 
+  serverTimestamp,
+  onSnapshot,
   QueryConstraint,
+  query,
+  getDocs,
+  getDoc,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  where,
+  orderBy
+} from 'firebase/firestore'
+import type {
+  SnapshotOptions,
+  FirestoreDataConverter,
   DocumentData,
-  serverTimestamp
 } from 'firebase/firestore'
 import { db } from './firebase'
+import type { 
+  UserProfile, 
+  NgoProfile, 
+  Report, 
+  HelpLocation, 
+  CommunityPost, 
+  Rsvp,
+  TimelineEvent
+} from '@/types'
 
 /**
- * Generic helper to fetch a single document by ID
+ * Generic Firestore Data Converter
+ * Adds 'id' to the data when reading from Firestore, and strips it when writing.
  */
-export async function getDocument<T = DocumentData>(collectionName: string, id: string): Promise<T | null> {
-  const docRef = doc(db, collectionName, id)
-  const docSnap = await getDoc(docRef)
-  
-  if (docSnap.exists()) {
-    return { id: docSnap.id, ...docSnap.data() } as T
+const createConverter = <T extends DocumentData>(): FirestoreDataConverter<T> => ({
+  toFirestore: (data: T): DocumentData => {
+    const { id, ...rest } = data
+    return rest
+  },
+  fromFirestore: (snapshot: QueryDocumentSnapshot, options: SnapshotOptions): T => {
+    const data = snapshot.data(options)
+    return {
+      id: snapshot.id,
+      ...data,
+    } as unknown as T
   }
-  return null
+})
+
+/**
+ * Typed Collection References
+ */
+export const collections = {
+  users: collection(db, 'users').withConverter(createConverter<UserProfile>()),
+  ngos: collection(db, 'ngos').withConverter(createConverter<NgoProfile>()),
+  reports: collection(db, 'reports').withConverter(createConverter<Report>()),
+  helpLocations: collection(db, 'help_locations').withConverter(createConverter<HelpLocation>()),
+  posts: collection(db, 'posts').withConverter(createConverter<CommunityPost>()),
+  rsvps: collection(db, 'rsvps').withConverter(createConverter<Rsvp>()),
+  timelineEvents: collection(db, 'timeline_events').withConverter(createConverter<TimelineEvent>()),
 }
 
 /**
- * Generic helper to fetch documents based on query constraints
+ * Typed Document Helpers (CRUD)
  */
-export async function queryDocuments<T = DocumentData>(
-  collectionName: string, 
-  constraints: QueryConstraint[]
-): Promise<T[]> {
-  const q = query(collection(db, collectionName), ...constraints)
-  const querySnapshot = await getDocs(q)
-  
-  return querySnapshot.docs.map(doc => ({
-    id: doc.id,
-    ...doc.data()
-  })) as T[]
+
+export async function getDocument<T>(collectionRef: any, docId: string): Promise<T | null> {
+  const docSnap = await getDoc(doc(collectionRef, docId))
+  return docSnap.exists() ? (docSnap.data() as T) : null
 }
 
-/**
- * Generic helper to fetch all documents in a collection
- */
-export async function getAllDocuments<T = DocumentData>(collectionName: string): Promise<T[]> {
-  const querySnapshot = await getDocs(collection(db, collectionName))
-  
-  return querySnapshot.docs.map(doc => ({
-    id: doc.id,
-    ...doc.data()
-  })) as T[]
-}
-
-/**
- * Generic helper to create a new document
- * Automatically adds createdAt and updatedAt timestamps
- */
-export async function createDocument<T extends DocumentData>(
-  collectionName: string, 
+export async function addDocument<T extends DocumentData>(
+  collectionRef: any, 
   data: Omit<T, 'id' | 'createdAt' | 'updatedAt'>
 ): Promise<string> {
-  const docRef = await addDoc(collection(db, collectionName), {
+  const docRef = await addDoc(collectionRef, {
     ...data,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp()
@@ -73,26 +82,114 @@ export async function createDocument<T extends DocumentData>(
   return docRef.id
 }
 
-/**
- * Generic helper to update a document
- * Automatically updates the updatedAt timestamp
- */
 export async function updateDocument<T extends DocumentData>(
-  collectionName: string, 
-  id: string, 
-  data: Partial<T>
+  collectionRef: any, 
+  docId: string, 
+  data: Partial<Omit<T, 'id' | 'createdAt' | 'updatedAt'>>
 ): Promise<void> {
-  const docRef = doc(db, collectionName, id)
-  await updateDoc(docRef, {
+  const ref = doc(collectionRef, docId)
+  await updateDoc(ref, {
     ...data,
     updatedAt: serverTimestamp()
   })
 }
 
+export async function deleteDocument(collectionRef: any, docId: string): Promise<void> {
+  await deleteDoc(doc(collectionRef, docId))
+}
+
+export async function queryDocuments<T>(
+  collectionRef: any, 
+  constraints: QueryConstraint[]
+): Promise<T[]> {
+  const q = query(collectionRef, ...constraints)
+  const querySnapshot = await getDocs(q)
+  return querySnapshot.docs.map(doc => doc.data() as T)
+}
+
 /**
- * Generic helper to delete a document
+ * Realtime Listener Support
  */
-export async function deleteDocument(collectionName: string, id: string): Promise<void> {
-  const docRef = doc(db, collectionName, id)
-  await deleteDoc(docRef)
+export function subscribeToQuery<T>(
+  collectionRef: any,
+  constraints: QueryConstraint[],
+  onData: (data: T[]) => void,
+  onError?: (error: Error) => void
+) {
+  const q = query(collectionRef, ...constraints)
+  return onSnapshot(
+    q,
+    (snapshot) => {
+      const results = snapshot.docs.map(doc => doc.data() as T)
+      onData(results)
+    },
+    (error) => {
+      console.error('Realtime subscription error:', error)
+      if (onError) onError(error)
+    }
+  )
+}
+
+export function subscribeToDoc<T>(
+  collectionRef: any,
+  docId: string,
+  onData: (data: T | null) => void,
+  onError?: (error: Error) => void
+) {
+  const ref = doc(collectionRef, docId)
+  return onSnapshot(
+    ref,
+    (docSnap) => {
+      if (docSnap.exists()) {
+        onData(docSnap.data() as T)
+      } else {
+        onData(null)
+      }
+    },
+    (error) => {
+      console.error('Realtime doc subscription error:', error)
+      if (onError) onError(error)
+    }
+  )
+}
+
+/**
+ * Common Queries
+ */
+export const queries = {
+  getActiveReportsForNgo: async (ngoId: string) => {
+    return queryDocuments<Report>(collections.reports, [
+      where('assignedNgoId', '==', ngoId),
+      where('status', 'in', ['submitted', 'under_review', 'dispatched']),
+      orderBy('createdAt', 'desc')
+    ])
+  },
+
+  getReportsByUser: async (userId: string) => {
+    return queryDocuments<Report>(collections.reports, [
+      where('userId', '==', userId),
+      orderBy('createdAt', 'desc')
+    ])
+  },
+
+  getPostsByNgo: async (ngoId: string) => {
+    return queryDocuments<CommunityPost>(collections.posts, [
+      where('ngoId', '==', ngoId),
+      orderBy('createdAt', 'desc')
+    ])
+  },
+  
+  getHelpLocationsByType: async (type: string) => {
+    return queryDocuments<HelpLocation>(collections.helpLocations, [
+      where('type', '==', type),
+      where('isOpen', '==', true)
+    ])
+  },
+  
+  getTimelineEventsForReport: async (reportId: string) => {
+    return queryDocuments<TimelineEvent>(collections.timelineEvents, [
+      where('reportId', '==', reportId),
+      orderBy('createdAt', 'asc')
+    ])
+  }
 }

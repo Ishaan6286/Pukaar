@@ -1,29 +1,34 @@
 // Production Gemini classification call.
 //
-// Stack: Firebase AI Logic (firebase/ai) with the Gemini Developer API
-// backend (free Spark plan — no Vertex AI, no Blaze). Browser-only — this
-// module must not be imported from Node scripts. The standalone validation
-// script lives at scripts/testGemini.ts and uses @google/generative-ai
-// because firebase/ai cannot run in Node.
+// Uses @google/generative-ai directly with a Gemini Developer API key
+// (VITE_GEMINI_API_KEY in .env.local), so the browser hits
+// generativelanguage.googleapis.com directly. We previously routed through
+// firebase/ai (Firebase AI Logic) but it returned 403 in this project's
+// configuration. Same model + same SYSTEM_PROMPT + same GEMINI_REPORT_SCHEMA
+// — only the transport changed. Mirrors scripts/testGemini.ts.
 //
-// Model: 'gemini-2.5-flash' (the user-locked target). If you bump it, also
-// update the comment in the test script so we know what was last validated.
+// Browser-only — this module must not be imported from Node scripts.
 
 import {
-  getAI,
-  getGenerativeModel,
-  GoogleAIBackend,
+  GoogleGenerativeAI,
   type GenerativeModel,
   type Part,
-} from 'firebase/ai'
+  type Schema,
+} from '@google/generative-ai'
 
-import { app } from '@/lib/firebase'
 import { GEMINI_REPORT_SCHEMA, validateReportAi } from '@/lib/aiSchema'
 import { SYSTEM_PROMPT } from '@/lib/geminiPrompt'
 import type { ReportAI } from '@/types'
 
 const MODEL_ID = 'gemini-2.5-flash'
 const REQUEST_TIMEOUT_MS = 25_000
+
+const apiKey = import.meta.env.VITE_GEMINI_API_KEY
+if (!apiKey) {
+  throw new Error(
+    'VITE_GEMINI_API_KEY is not set. Add it to .env.local and restart npm run dev.',
+  )
+}
 
 export interface ClassifyReportInput {
   text?: string
@@ -37,13 +42,17 @@ let cachedModel: GenerativeModel | null = null
 
 function getModel(): GenerativeModel {
   if (cachedModel) return cachedModel
-  const ai = getAI(app, { backend: new GoogleAIBackend() })
-  cachedModel = getGenerativeModel(ai, {
+  const genAI = new GoogleGenerativeAI(apiKey)
+  // The Firebase AI Logic Schema and the @google/generative-ai Schema share
+  // the same OpenAPI shape; JSON-roundtripping strips any firebase/ai class
+  // machinery so the SDK sees a plain object.
+  const responseSchema = JSON.parse(JSON.stringify(GEMINI_REPORT_SCHEMA)) as Schema
+  cachedModel = genAI.getGenerativeModel({
     model: MODEL_ID,
     systemInstruction: SYSTEM_PROMPT,
     generationConfig: {
       responseMimeType: 'application/json',
-      responseSchema: GEMINI_REPORT_SCHEMA,
+      responseSchema,
     },
   })
   return cachedModel
@@ -101,7 +110,12 @@ export async function classifyReport(input: ClassifyReportInput): Promise<Report
   const result = await withTimeout(
     model.generateContent({ contents: [{ role: 'user', parts }] }),
     REQUEST_TIMEOUT_MS,
-  )
+  ).catch((err: unknown): never => {
+    throw new Error(
+      `classifyReport: Gemini call failed. ${err instanceof Error ? err.message : String(err)}`,
+      { cause: err },
+    )
+  })
 
   const responseText = result.response.text()
   if (!responseText) {

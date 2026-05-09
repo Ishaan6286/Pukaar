@@ -11,6 +11,7 @@ import Dashboard from '@/routes/ngo/Dashboard'
 import ReportDetail from '@/routes/ngo/ReportDetail'
 import NewPost from '@/routes/ngo/NewPost'
 import Login from '@/routes/Login'
+import Profile from '@/routes/Profile'
 import RoleGate from '@/components/RoleGate'
 
 const notFoundElement = (
@@ -71,6 +72,14 @@ export const router = createBrowserRouter([
         element: (
           <RoleGate allow={['citizen', 'ngo_admin']}>
             <Feed />
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'profile',
+        element: (
+          <RoleGate allow={['citizen', 'ngo_admin']}>
+            <Profile />
           </RoleGate>
         ),
       },

@@ -1,0 +1,401 @@
+{
+  "ngos": [
+    {
+      "id": "ngo_animal_rescue_blr",
+      "name": "Bengaluru Animal Rescue",
+      "description": "24/7 stray rescue and on-site first aid for injured animals across the city.",
+      "categories": ["animal_welfare"],
+      "location": { "lat": 12.9784, "lng": 77.6408 },
+      "contactPhone": "+91-9000000001",
+      "contactEmail": "rescue@example.org",
+      "logoUrl": "https://api.dicebear.com/7.x/initials/svg?seed=BAR&backgroundColor=10b981",
+      "verified": true,
+      "adminUids": []
+    },
+    {
+      "id": "ngo_paws_koramangala",
+      "name": "Paws & Claws Koramangala",
+      "description": "Community-run shelter and adoption center for abandoned pets in south Bengaluru.",
+      "categories": ["animal_welfare"],
+      "location": { "lat": 12.9352, "lng": 77.6245 },
+      "contactPhone": "+91-9000000002",
+      "contactEmail": "hello@pawskoramangala.example.org",
+      "logoUrl": "https://api.dicebear.com/7.x/initials/svg?seed=PCK&backgroundColor=22c55e",
+      "verified": true,
+      "adminUids": []
+    },
+    {
+      "id": "ngo_strays_marathahalli",
+      "name": "Marathahalli Stray Care",
+      "description": "Mobile vet team treating injured strays across Marathahalli, Whitefield and Bellandur.",
+      "categories": ["animal_welfare"],
+      "location": { "lat": 12.9569, "lng": 77.7011 },
+      "contactPhone": "+91-9000000003",
+      "contactEmail": "team@straysmthl.example.org",
+      "logoUrl": "https://api.dicebear.com/7.x/initials/svg?seed=MSC&backgroundColor=14b8a6",
+      "verified": true,
+      "adminUids": []
+    },
+    {
+      "id": "ngo_homeless_shelter_jayanagar",
+      "name": "Jayanagar Homeless Shelter",
+      "description": "Overnight shelter, hot meals, and reintegration support for people experiencing homelessness.",
+      "categories": ["person_welfare"],
+      "location": { "lat": 12.925, "lng": 77.5938 },
+      "contactPhone": "+91-9000000004",
+      "contactEmail": "contact@jayanagarshelter.example.org",
+      "logoUrl": "https://api.dicebear.com/7.x/initials/svg?seed=JHS&backgroundColor=3b82f6",
+      "verified": true,
+      "adminUids": []
+    },
+    {
+      "id": "ngo_helping_hands_whitefield",
+      "name": "Helping Hands Whitefield",
+      "description": "Emergency aid for vulnerable individuals — elderly, daily wage workers, and migrant families.",
+      "categories": ["person_welfare"],
+      "location": { "lat": 12.9698, "lng": 77.75 },
+      "contactPhone": "+91-9000000005",
+      "contactEmail": "support@helpinghandswf.example.org",
+      "logoUrl": "https://api.dicebear.com/7.x/initials/svg?seed=HHW&backgroundColor=6366f1",
+      "verified": true,
+      "adminUids": []
+    },
+    {
+      "id": "ngo_seva_yelahanka",
+      "name": "Seva Yelahanka",
+      "description": "Person-welfare outreach for north Bengaluru — medical camps, ration kits, and counseling.",
+      "categories": ["person_welfare"],
+      "location": { "lat": 13.1007, "lng": 77.5963 },
+      "contactPhone": "+91-9000000006",
+      "contactEmail": "office@sevayelahanka.example.org",
+      "logoUrl": "https://api.dicebear.com/7.x/initials/svg?seed=SY&backgroundColor=8b5cf6",
+      "verified": true,
+      "adminUids": []
+    },
+    {
+      "id": "ngo_community_first_hsr",
+      "name": "Community First HSR",
+      "description": "Tackles civic issues like waste, broken infrastructure, and unsafe public spaces in HSR Layout.",
+      "categories": ["community_need"],
+      "location": { "lat": 12.9116, "lng": 77.6473 },
+      "contactPhone": "+91-9000000007",
+      "contactEmail": "team@communityfirst.example.org",
+      "logoUrl": "https://api.dicebear.com/7.x/initials/svg?seed=CFH&backgroundColor=f59e0b",
+      "verified": true,
+      "adminUids": []
+    },
+    {
+      "id": "ngo_civic_action_ec",
+      "name": "Civic Action Electronic City",
+      "description": "Resident-led group coordinating donation drives, clean-ups, and school supply distribution.",
+      "categories": ["community_need"],
+      "location": { "lat": 12.8456, "lng": 77.6603 },
+      "contactPhone": "+91-9000000008",
+      "contactEmail": "hello@civicactionec.example.org",
+      "logoUrl": "https://api.dicebear.com/7.x/initials/svg?seed=CAE&backgroundColor=ef4444",
+      "verified": true,
+      "adminUids": []
+    }
+  ],
+  "help_locations": [
+    {
+      "id": "hl_food_bank_indiranagar",
+      "type": "food_bank",
+      "name": "Indiranagar Food Bank",
+      "address": "100 Feet Rd, Indiranagar, Bengaluru",
+      "location": { "lat": 12.9784, "lng": 77.6408 },
+      "hours": "Mon–Sat 9am–6pm",
+      "phone": "+91-8000000001"
+    },
+    {
+      "id": "hl_food_bank_koramangala",
+      "type": "food_bank",
+      "name": "Koramangala Community Pantry",
+      "address": "80 Feet Rd, 4th Block, Koramangala, Bengaluru",
+      "location": { "lat": 12.9352, "lng": 77.6245 },
+      "hours": "Mon–Fri 10am–7pm, Sat 10am–2pm",
+      "phone": "+91-8000000002"
+    },
+    {
+      "id": "hl_food_bank_jayanagar",
+      "type": "food_bank",
+      "name": "Jayanagar Food Distribution Center",
+      "address": "11th Main Rd, 4th Block, Jayanagar, Bengaluru",
+      "location": { "lat": 12.925, "lng": 77.5938 },
+      "hours": "Daily 8am–8pm",
+      "phone": "+91-8000000003"
+    },
+    {
+      "id": "hl_food_bank_whitefield",
+      "type": "food_bank",
+      "name": "Whitefield Ration Hub",
+      "address": "ITPL Main Rd, Whitefield, Bengaluru",
+      "location": { "lat": 12.9698, "lng": 77.75 },
+      "hours": "Mon–Sat 9am–5pm",
+      "phone": "+91-8000000004"
+    },
+    {
+      "id": "hl_food_bank_yelahanka",
+      "type": "food_bank",
+      "name": "Yelahanka Food Bank",
+      "address": "Mother Dairy Rd, Yelahanka, Bengaluru",
+      "location": { "lat": 13.1007, "lng": 77.5963 },
+      "hours": "Tue–Sun 9am–6pm",
+      "phone": "+91-8000000005"
+    },
+    {
+      "id": "hl_shelter_marathahalli",
+      "type": "shelter",
+      "name": "Marathahalli Night Shelter",
+      "address": "Outer Ring Rd, Marathahalli, Bengaluru",
+      "location": { "lat": 12.9569, "lng": 77.7011 },
+      "hours": "7pm–7am daily",
+      "phone": "+91-8000000006"
+    },
+    {
+      "id": "hl_shelter_hsr",
+      "type": "shelter",
+      "name": "HSR Layout Shelter Home",
+      "address": "27th Main Rd, HSR Layout, Bengaluru",
+      "location": { "lat": 12.9116, "lng": 77.6473 },
+      "hours": "24/7",
+      "phone": "+91-8000000007"
+    },
+    {
+      "id": "hl_shelter_ec",
+      "type": "shelter",
+      "name": "Electronic City Shelter",
+      "address": "Hosur Rd, Electronic City Phase 1, Bengaluru",
+      "location": { "lat": 12.8456, "lng": 77.6603 },
+      "hours": "6pm–8am daily",
+      "phone": "+91-8000000008"
+    },
+    {
+      "id": "hl_shelter_kalyan_nagar",
+      "type": "shelter",
+      "name": "Kalyan Nagar Refuge",
+      "address": "HRBR Layout, Kalyan Nagar, Bengaluru",
+      "location": { "lat": 13.0227, "lng": 77.645 },
+      "hours": "24/7",
+      "phone": "+91-8000000009"
+    },
+    {
+      "id": "hl_animal_rescue_indiranagar",
+      "type": "animal_rescue",
+      "name": "Indiranagar Animal Rescue Center",
+      "address": "12th Main Rd, Indiranagar, Bengaluru",
+      "location": { "lat": 12.9784, "lng": 77.6408 },
+      "hours": "24/7 emergency line",
+      "phone": "+91-8000000010"
+    },
+    {
+      "id": "hl_animal_rescue_koramangala",
+      "type": "animal_rescue",
+      "name": "Koramangala Pet Care Trust",
+      "address": "5th Block, Koramangala, Bengaluru",
+      "location": { "lat": 12.9352, "lng": 77.6245 },
+      "hours": "Daily 8am–10pm",
+      "phone": "+91-8000000011"
+    },
+    {
+      "id": "hl_animal_rescue_marathahalli",
+      "type": "animal_rescue",
+      "name": "Marathahalli Stray Clinic",
+      "address": "AECS Layout, Marathahalli, Bengaluru",
+      "location": { "lat": 12.9569, "lng": 77.7011 },
+      "hours": "Mon–Sat 9am–7pm",
+      "phone": "+91-8000000012"
+    },
+    {
+      "id": "hl_kitchen_jayanagar",
+      "type": "community_kitchen",
+      "name": "Jayanagar Annapoorna Kitchen",
+      "address": "9th Block, Jayanagar, Bengaluru",
+      "location": { "lat": 12.925, "lng": 77.5938 },
+      "hours": "Lunch 12pm–2pm, Dinner 7pm–9pm",
+      "phone": "+91-8000000013"
+    },
+    {
+      "id": "hl_kitchen_whitefield",
+      "type": "community_kitchen",
+      "name": "Whitefield Community Kitchen",
+      "address": "Varthur Main Rd, Whitefield, Bengaluru",
+      "location": { "lat": 12.9698, "lng": 77.75 },
+      "hours": "Daily 11am–8pm",
+      "phone": "+91-8000000014"
+    },
+    {
+      "id": "hl_kitchen_hsr",
+      "type": "community_kitchen",
+      "name": "HSR Free Meals Kitchen",
+      "address": "27th Main Rd, HSR Layout, Bengaluru",
+      "location": { "lat": 12.9116, "lng": 77.6473 },
+      "hours": "Lunch only, 12pm–3pm",
+      "phone": "+91-8000000015"
+    }
+  ],
+  "posts": [
+    {
+      "id": "post_drive_blr_001",
+      "ngoId": "ngo_animal_rescue_blr",
+      "type": "drive",
+      "title": "Sunday Spay & Neuter Drive",
+      "body": "Free spay and neuter clinic for community cats and dogs. Volunteers welcome — bring a carrier if you can.",
+      "photoUrl": "https://images.unsplash.com/photo-1507146426996-ef05306b995a?w=800",
+      "eventDate": "2026-06-14T09:00:00.000Z",
+      "rsvpCount": 0
+    },
+    {
+      "id": "post_drive_pck_001",
+      "ngoId": "ngo_paws_koramangala",
+      "type": "drive",
+      "title": "Pet Adoption Day",
+      "body": "Twelve rescued cats and dogs looking for forever homes. Meet them in person at our Koramangala shelter.",
+      "photoUrl": "https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=800",
+      "eventDate": "2026-05-24T10:00:00.000Z",
+      "rsvpCount": 0
+    },
+    {
+      "id": "post_drive_jhs_001",
+      "ngoId": "ngo_homeless_shelter_jayanagar",
+      "type": "drive",
+      "title": "Monsoon Blanket Distribution",
+      "body": "Distributing blankets and tarps ahead of the monsoon. Volunteers needed for sorting and street distribution.",
+      "photoUrl": "https://images.unsplash.com/photo-1544739313-e6f0e2f4cc18?w=800",
+      "eventDate": "2026-05-30T07:00:00.000Z",
+      "rsvpCount": 0
+    },
+    {
+      "id": "post_drive_cae_001",
+      "ngoId": "ngo_civic_action_ec",
+      "type": "drive",
+      "title": "School Supply Donation Drive",
+      "body": "Notebooks, pens, and bags for 200 children at the Electronic City government school. Drop-off all weekend.",
+      "photoUrl": "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800",
+      "eventDate": "2026-06-07T08:00:00.000Z",
+      "rsvpCount": 0
+    },
+    {
+      "id": "post_donation_msc_001",
+      "ngoId": "ngo_strays_marathahalli",
+      "type": "donation",
+      "title": "Vet Supplies Needed",
+      "body": "We're running low on antiseptic spray, gauze, and stainless feeding bowls. Cash or kind donations welcome.",
+      "photoUrl": "https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=800",
+      "rsvpCount": 0
+    },
+    {
+      "id": "post_donation_hhw_001",
+      "ngoId": "ngo_helping_hands_whitefield",
+      "type": "donation",
+      "title": "Ration Kits for Daily Wage Families",
+      "body": "Each ₹600 kit feeds a family of four for a week. Help us hit our goal of 100 kits this month.",
+      "photoUrl": "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=800",
+      "rsvpCount": 0
+    },
+    {
+      "id": "post_donation_cfh_001",
+      "ngoId": "ngo_community_first_hsr",
+      "type": "donation",
+      "title": "Sponsor a Streetlight Repair",
+      "body": "Three dark stretches in HSR Sector 6 are unsafe at night. ₹4,000 covers a full streetlight repair.",
+      "rsvpCount": 0
+    },
+    {
+      "id": "post_update_sy_001",
+      "ngoId": "ngo_seva_yelahanka",
+      "type": "update",
+      "title": "April Medical Camp Recap",
+      "body": "We screened 312 patients and distributed 580 prescriptions across two days. Thanks to all 18 volunteers.",
+      "photoUrl": "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800",
+      "rsvpCount": 0
+    },
+    {
+      "id": "post_update_blr_001",
+      "ngoId": "ngo_animal_rescue_blr",
+      "type": "update",
+      "title": "Rescued Puppy Update",
+      "body": "Remember the litter we rescued from MG Road last month? All five are healthy, vaccinated, and adopted.",
+      "photoUrl": "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=800",
+      "rsvpCount": 0
+    },
+    {
+      "id": "post_drive_sy_001",
+      "ngoId": "ngo_seva_yelahanka",
+      "type": "drive",
+      "title": "Free Eye Check-Up Camp",
+      "body": "Free eye exams and reading glasses for senior citizens. Open to walk-ins all day.",
+      "photoUrl": "https://images.unsplash.com/photo-1582719471384-894fbb16e074?w=800",
+      "eventDate": "2026-05-17T08:30:00.000Z",
+      "rsvpCount": 0
+    }
+  ],
+  "reports": [
+    {
+      "id": "report_history_001",
+      "reporterUid": "demo-citizen-uid-1",
+      "reporterAnonHandle": "Citizen-3F7A",
+      "description": "Stray dog limping near MG Road metro station.",
+      "photoDataUrl": null,
+      "location": { "lat": 12.9756, "lng": 77.6053 },
+      "ai": {
+        "category": "animal_welfare",
+        "subcategory": "injured stray dog",
+        "summary": "An adult stray dog is limping near MG Road metro station with a visible wound on its rear leg.",
+        "urgency": "medium",
+        "suggestedAction": "Dispatch one volunteer with a pet carrier and basic first-aid supplies.",
+        "suppliesNeeded": ["pet carrier", "antiseptic spray", "bandages"],
+        "needsHumanReview": false
+      },
+      "ngoId": "ngo_animal_rescue_blr",
+      "ngoName": "Bengaluru Animal Rescue",
+      "status": "resolved",
+      "createdAt": "2026-04-30T10:30:00.000Z",
+      "acceptedAt": "2026-04-30T10:35:00.000Z",
+      "resolvedAt": "2026-04-30T11:50:00.000Z"
+    },
+    {
+      "id": "report_history_002",
+      "reporterUid": "demo-citizen-uid-2",
+      "reporterAnonHandle": "Citizen-7B2C",
+      "description": "Elderly man sleeping on the footpath near Jayanagar 4th Block bus stop, looks weak and hasn't moved in hours.",
+      "photoDataUrl": null,
+      "location": { "lat": 12.9263, "lng": 77.5915 },
+      "ai": {
+        "category": "person_welfare",
+        "subcategory": "vulnerable elderly person",
+        "summary": "An elderly man appears unwell on the footpath near Jayanagar 4th Block bus stop and has not moved for several hours.",
+        "urgency": "high",
+        "suggestedAction": "Send an outreach worker with water and a medic to assess and offer shelter intake.",
+        "suppliesNeeded": ["bottled water", "blanket", "first aid kit"],
+        "needsHumanReview": false
+      },
+      "ngoId": "ngo_homeless_shelter_jayanagar",
+      "ngoName": "Jayanagar Homeless Shelter",
+      "status": "accepted",
+      "createdAt": "2026-05-08T16:10:00.000Z",
+      "acceptedAt": "2026-05-08T16:18:00.000Z"
+    },
+    {
+      "id": "report_history_003",
+      "reporterUid": "demo-citizen-uid-3",
+      "reporterAnonHandle": "Citizen-9D4E",
+      "description": "Garbage piled up at the corner of 27th Main and 14th Cross in HSR for over a week, attracting rats.",
+      "photoDataUrl": null,
+      "location": { "lat": 12.9128, "lng": 77.6481 },
+      "ai": {
+        "category": "community_need",
+        "subcategory": "uncollected solid waste",
+        "summary": "A large pile of uncollected garbage at 27th Main and 14th Cross in HSR has been accumulating for over a week and is attracting pests.",
+        "urgency": "low",
+        "suggestedAction": "Coordinate with BBMP for a special pickup and post a community clean-up notice.",
+        "suppliesNeeded": ["gloves", "garbage bags", "brooms"],
+        "needsHumanReview": false
+      },
+      "ngoId": "ngo_community_first_hsr",
+      "ngoName": "Community First HSR",
+      "status": "submitted",
+      "createdAt": "2026-05-09T09:05:00.000Z"
+    }
+  ]
+}

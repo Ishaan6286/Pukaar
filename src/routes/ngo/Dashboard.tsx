@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { ReactElement } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Heart, Inbox } from 'lucide-react'
 import { collection, onSnapshot, query, where } from 'firebase/firestore'
 
 import ReportCard from '@/components/ReportCard'
@@ -64,7 +65,12 @@ export default function Dashboard(): ReactElement {
   return (
     <div className="min-h-screen p-4 max-w-2xl mx-auto">
       <div className="flex flex-row justify-between items-center mb-4">
-        <h1 className="text-2xl font-semibold">NGO Inbox</h1>
+        <div className="flex items-center gap-2">
+          <div className="bg-brand-gradient w-8 h-8 rounded-xl flex items-center justify-center shadow-soft">
+            <Heart aria-hidden="true" className="h-4 w-4 text-white" />
+          </div>
+          <h1 className="text-2xl font-semibold tracking-tight">NGO Inbox</h1>
+        </div>
         <div className="flex items-center gap-1">
           <Button variant="ghost" size="sm" onClick={() => navigate('/ngo/posts/new')}>
             + New post
@@ -79,14 +85,20 @@ export default function Dashboard(): ReactElement {
       </div>
 
       {loading ? (
-        <p className="text-sm text-muted-foreground">Loading inbox…</p>
+        <div className="flex flex-col gap-3">
+          <div className="skeleton h-32 rounded-lg" />
+          <div className="skeleton h-32 rounded-lg" />
+          <div className="skeleton h-32 rounded-lg" />
+        </div>
       ) : error ? (
         <p className="text-destructive text-sm">{error}</p>
       ) : reports.length === 0 ? (
-        <Card>
-          <CardContent className="p-6">
+        <Card className="shadow-soft animate-fade-in-up">
+          <CardContent className="flex flex-col items-center gap-3 py-12 text-center">
+            <Inbox className="h-10 w-10 text-muted-foreground/40" />
+            <p className="font-medium">Inbox is empty</p>
             <p className="text-sm text-muted-foreground">
-              Inbox is empty. New reports will appear here in real time.
+              New reports will appear here in real time.
             </p>
           </CardContent>
         </Card>

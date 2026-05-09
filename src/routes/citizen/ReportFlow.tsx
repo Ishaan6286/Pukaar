@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
+import type { ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Loader2, Send } from 'lucide-react'
+import { ArrowLeft, Loader2, MapPin, MapPinOff, Send } from 'lucide-react'
 
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -85,10 +87,23 @@ export default function ReportFlow() {
   const hasInput = Boolean(photo) || Boolean(voice) || description.trim().length > 0
   const submitDisabled = submitting || location === null || !hasInput
 
-  let locationPill: string | null = null
-  if (locationStatus === 'requesting') locationPill = 'Locating you…'
-  else if (locationStatus === 'ready') locationPill = 'Location ready'
-  else if (locationStatus === 'error') locationPill = 'Using demo location (Bengaluru)'
+  let locationBadge: { icon: ReactNode; label: string } | null = null
+  if (locationStatus === 'requesting') {
+    locationBadge = {
+      icon: <Loader2 className="mr-1 h-3 w-3 animate-spin" />,
+      label: 'Locating you…',
+    }
+  } else if (locationStatus === 'ready') {
+    locationBadge = {
+      icon: <MapPin className="mr-1 h-3 w-3" />,
+      label: 'Location ready',
+    }
+  } else if (locationStatus === 'error') {
+    locationBadge = {
+      icon: <MapPinOff className="mr-1 h-3 w-3" />,
+      label: 'Using demo location (Bengaluru)',
+    }
+  }
 
   return (
     <div className="min-h-screen p-4 max-w-md mx-auto flex flex-col">
@@ -98,21 +113,30 @@ export default function ReportFlow() {
         </Button>
       </div>
 
-      <h1 className="text-2xl font-semibold mt-2">Report something</h1>
+      <h1 className="text-2xl font-semibold tracking-tight mt-2">Report something</h1>
       <p className="text-muted-foreground text-sm">
         Use any combination — voice, photo, or text. We'll route it.
       </p>
 
-      {locationPill && (
-        <div className="mt-3 inline-flex self-start rounded-full border border-border bg-muted px-3 py-1 text-xs text-muted-foreground">
-          {locationPill}
-        </div>
+      {locationBadge && (
+        <Badge
+          variant="secondary"
+          className="mt-3 self-start inline-flex items-center font-normal"
+        >
+          {locationBadge.icon}
+          {locationBadge.label}
+        </Badge>
       )}
 
       <div className="mt-4 space-y-4">
-        <Card>
+        <Card className="shadow-soft hover:shadow-soft-lg transition-shadow">
           <CardHeader>
-            <CardTitle className="text-base">Photo</CardTitle>
+            <CardTitle className="text-base flex items-center gap-2">
+              <span className="bg-secondary text-secondary-foreground w-6 h-6 rounded-full text-xs font-semibold flex items-center justify-center">
+                1
+              </span>
+              Photo
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <CameraCapture
@@ -123,9 +147,14 @@ export default function ReportFlow() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="shadow-soft hover:shadow-soft-lg transition-shadow">
           <CardHeader>
-            <CardTitle className="text-base">Voice</CardTitle>
+            <CardTitle className="text-base flex items-center gap-2">
+              <span className="bg-secondary text-secondary-foreground w-6 h-6 rounded-full text-xs font-semibold flex items-center justify-center">
+                2
+              </span>
+              Voice
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <VoiceRecorder
@@ -136,9 +165,14 @@ export default function ReportFlow() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="shadow-soft hover:shadow-soft-lg transition-shadow">
           <CardHeader>
-            <CardTitle className="text-base">Describe</CardTitle>
+            <CardTitle className="text-base flex items-center gap-2">
+              <span className="bg-secondary text-secondary-foreground w-6 h-6 rounded-full text-xs font-semibold flex items-center justify-center">
+                3
+              </span>
+              Describe
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <Textarea
@@ -155,7 +189,7 @@ export default function ReportFlow() {
       <div className="mt-6">
         <Button
           size="lg"
-          className="w-full"
+          className="w-full bg-brand-gradient text-white hover:opacity-90"
           disabled={submitDisabled}
           onClick={() => {
             void handleSubmit()

@@ -21,6 +21,7 @@ export interface ReportCardProps {
 interface StatusPill {
   variant: 'default' | 'secondary' | 'outline'
   label: string
+  className?: string
 }
 
 function statusPill(status: ReportStatus, variant: 'ngo' | 'citizen', ngoName?: string): StatusPill {
@@ -28,14 +29,22 @@ function statusPill(status: ReportStatus, variant: 'ngo' | 'citizen', ngoName?: 
     case 'pending':
       return { variant: 'outline', label: 'Submitting…' }
     case 'submitted':
-      return { variant: 'default', label: 'Submitted' }
+      return {
+        variant: 'outline',
+        label: 'Submitted',
+        className: 'bg-amber-50 text-amber-800 border-amber-200 hover:bg-amber-50',
+      }
     case 'accepted':
       return {
-        variant: 'default',
+        variant: 'outline',
         label: variant === 'citizen' && ngoName ? `Accepted by ${ngoName}` : 'Accepted',
+        className: 'bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-50',
       }
     case 'resolved':
-      return { variant: 'secondary', label: 'Resolved' }
+      return {
+        variant: 'secondary',
+        label: 'Resolved',
+      }
   }
 }
 
@@ -70,7 +79,11 @@ export default function ReportCard({
 
   return (
     <Card
-      className={cn(clickable && 'cursor-pointer hover:bg-accent/30 transition-colors', className)}
+      className={cn(
+        'shadow-soft hover:shadow-soft-lg transition-shadow',
+        clickable && 'cursor-pointer hover:-translate-y-0.5 transition-transform',
+        className,
+      )}
       onClick={onClick}
       onKeyDown={clickable ? handleKeyDown : undefined}
       role={clickable ? 'button' : undefined}
@@ -85,7 +98,9 @@ export default function ReportCard({
             </>
           ) : null}
         </div>
-        <Badge variant={pill.variant}>{pill.label}</Badge>
+        <Badge variant={pill.variant} className={pill.className}>
+          {pill.label}
+        </Badge>
       </CardHeader>
       <CardContent>
         {report.photoDataUrl ? (
@@ -128,7 +143,11 @@ export default function ReportCard({
       {showFooter ? (
         <CardFooter>
           {showAccept ? (
-            <Button onClick={stop(onAccept)} disabled={busy} className="w-full">
+            <Button
+              onClick={stop(onAccept)}
+              disabled={busy}
+              className="w-full bg-brand-gradient text-white hover:opacity-90"
+            >
               Accept
             </Button>
           ) : null}

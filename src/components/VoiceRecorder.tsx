@@ -240,7 +240,12 @@ export default function VoiceRecorder({
 
   if (phase === 'recording') {
     return (
-      <Button type="button" variant="destructive" onClick={stop}>
+      <Button
+        type="button"
+        variant="destructive"
+        onClick={stop}
+        className="ring-2 ring-destructive/20"
+      >
         <Square className="mr-2 h-4 w-4" />
         Stop ({formatMmSs(elapsedMs)})
       </Button>
@@ -275,7 +280,13 @@ export default function VoiceRecorder({
 
   return (
     <div className="flex flex-col gap-2">
-      <Button type="button" disabled={disabled} onClick={() => void start()}>
+      <Button
+        type="button"
+        variant="outline"
+        disabled={disabled}
+        onClick={() => void start()}
+        className="hover:ring-1 hover:ring-primary/20 transition-shadow"
+      >
         <Mic className="mr-2 h-4 w-4" />
         Record voice
       </Button>

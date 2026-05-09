@@ -97,7 +97,13 @@ export default function CameraCapture({
 
       {(phase === 'idle' || phase === 'error') && (
         <>
-          <Button type="button" disabled={disabled} onClick={trigger}>
+          <Button
+            type="button"
+            variant="outline"
+            disabled={disabled}
+            onClick={trigger}
+            className="hover:ring-1 hover:ring-primary/20 transition-shadow"
+          >
             <Camera className="mr-2 h-4 w-4" />
             Take photo
           </Button>
@@ -109,7 +115,11 @@ export default function CameraCapture({
 
       {phase === 'captured' && photo && (
         <div className="flex flex-col gap-2">
-          <img src={photo.dataUrl} alt="Captured" className="rounded-lg border max-h-48" />
+          <img
+            src={photo.dataUrl}
+            alt="Captured"
+            className="rounded-xl border max-h-48 shadow-soft"
+          />
           <div className="flex gap-2">
             <Button type="button" variant="outline" disabled={disabled} onClick={trigger}>
               <RotateCcw className="mr-2 h-4 w-4" />

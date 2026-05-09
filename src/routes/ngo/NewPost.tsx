@@ -138,18 +138,23 @@ export default function NewPost() {
         >
           <ArrowLeft className="h-4 w-4" />
         </Button>
-        <h1 className="text-2xl font-semibold">New post</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">New post</h1>
       </div>
 
       <div className="space-y-4">
         <div>
           <span className="text-sm font-medium block mb-2">Post type</span>
-          <div className="flex gap-2">
+          <div className="grid grid-cols-3 gap-2">
             {TYPE_OPTIONS.map((opt) => (
               <Button
                 key={opt.value}
                 type="button"
                 variant={type === opt.value ? 'default' : 'outline'}
+                className={cn(
+                  'w-full',
+                  type === opt.value &&
+                    'bg-brand-gradient text-white shadow-soft hover:opacity-90',
+                )}
                 onClick={() => setType(opt.value)}
                 disabled={submitting}
               >
@@ -213,7 +218,7 @@ export default function NewPost() {
         <Button
           type="button"
           size="lg"
-          className="w-full mt-2"
+          className="w-full mt-2 bg-brand-gradient text-white hover:opacity-90"
           disabled={disabledReason !== null}
           onClick={handleSubmit}
         >

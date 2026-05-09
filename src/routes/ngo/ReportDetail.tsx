@@ -102,7 +102,7 @@ export default function ReportDetail(): ReactElement {
           <ArrowLeft className="h-4 w-4 mr-1" />
           Back
         </Button>
-        <h1 className="text-2xl font-semibold">Report detail</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">Report detail</h1>
       </div>
 
       {loading ? (
@@ -112,7 +112,7 @@ export default function ReportDetail(): ReactElement {
       ) : !report ? (
         <p className="text-sm text-muted-foreground">Report not found.</p>
       ) : (
-        <Card>
+        <Card className="shadow-soft animate-fade-in-up">
           <CardHeader className="flex flex-row items-start justify-between gap-2 space-y-0">
             <div className="flex flex-wrap items-center gap-2">
               {report.ai ? (
@@ -131,7 +131,7 @@ export default function ReportDetail(): ReactElement {
               <img
                 src={report.photoDataUrl}
                 alt=""
-                className="rounded-lg border w-full max-h-72 object-cover mb-3"
+                className="rounded-xl border w-full max-h-72 object-cover mb-3 shadow-soft"
               />
             ) : null}
             {report.ai?.summary ? (
@@ -143,7 +143,7 @@ export default function ReportDetail(): ReactElement {
               </p>
             ) : null}
             {report.ai && report.ai.suppliesNeeded.length > 0 ? (
-              <div className="mt-2 flex flex-wrap gap-1">
+              <div className="mt-2 flex flex-wrap gap-1.5">
                 <span className="text-xs text-muted-foreground">Supplies:</span>
                 {report.ai.suppliesNeeded.map((s) => (
                   <Badge key={s} variant="outline" className="text-xs">
@@ -174,7 +174,11 @@ export default function ReportDetail(): ReactElement {
           </CardContent>
           <CardFooter className="gap-2">
             {report.status === 'submitted' ? (
-              <Button onClick={() => void onAccept()} disabled={busy}>
+              <Button
+                onClick={() => void onAccept()}
+                disabled={busy}
+                className="bg-brand-gradient text-white hover:opacity-90"
+              >
                 Accept
               </Button>
             ) : null}

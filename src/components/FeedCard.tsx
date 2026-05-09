@@ -99,9 +99,17 @@ export default function FeedCard({ post, className }: FeedCardProps) {
   function renderAction() {
     if (post.type === 'update') return <span />
     if (post.type === 'donation') {
-      return (
-        <Button onClick={() => void onToggleRsvp()} disabled={busy || !user}>
-          {hasRsvped ? 'Pledged ✓' : 'Pledge'}
+      return hasRsvped ? (
+        <Button variant="secondary" onClick={() => void onToggleRsvp()} disabled={busy}>
+          Pledged ✓
+        </Button>
+      ) : (
+        <Button
+          onClick={() => void onToggleRsvp()}
+          disabled={busy || !user}
+          className="bg-brand-gradient text-white hover:opacity-90"
+        >
+          Pledge
         </Button>
       )
     }
@@ -110,14 +118,23 @@ export default function FeedCard({ post, className }: FeedCardProps) {
         Going ✓
       </Button>
     ) : (
-      <Button onClick={() => void onToggleRsvp()} disabled={busy || !user}>
+      <Button
+        onClick={() => void onToggleRsvp()}
+        disabled={busy || !user}
+        className="bg-brand-gradient text-white hover:opacity-90"
+      >
         RSVP
       </Button>
     )
   }
 
   return (
-    <Card className={cn('overflow-hidden', className)}>
+    <Card
+      className={cn(
+        'overflow-hidden shadow-soft hover:shadow-soft-lg transition-shadow',
+        className,
+      )}
+    >
       <CardHeader className="flex flex-row items-center gap-3 space-y-0">
         {post.ngoLogoUrl ? (
           <img
@@ -126,7 +143,7 @@ export default function FeedCard({ post, className }: FeedCardProps) {
             className="w-10 h-10 rounded-full object-cover border"
           />
         ) : (
-          <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-sm font-semibold">
+          <div className="w-10 h-10 rounded-full bg-brand-gradient text-white flex items-center justify-center text-sm font-semibold">
             {post.ngoName.charAt(0).toUpperCase()}
           </div>
         )}

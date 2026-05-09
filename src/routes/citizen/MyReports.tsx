@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, FileText } from 'lucide-react'
 import {
   collection,
   onSnapshot,
@@ -59,21 +59,33 @@ export default function MyReports() {
         >
           <ArrowLeft className="h-4 w-4" />
         </Button>
-        <h1 className="text-2xl font-semibold">My reports</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">My reports</h1>
       </div>
       <p className="text-muted-foreground text-sm mb-4 ml-12">
         {reports.length} {reports.length === 1 ? 'report' : 'reports'}
       </p>
 
       {loading ? (
-        <p className="text-muted-foreground text-sm">Loading reports…</p>
+        <div className="space-y-3">
+          <div className="skeleton h-32 rounded-lg" />
+          <div className="skeleton h-32 rounded-lg" />
+          <div className="skeleton h-32 rounded-lg" />
+        </div>
       ) : error ? (
         <p className="text-destructive text-sm">{error}</p>
       ) : reports.length === 0 ? (
-        <Card>
-          <CardContent className="flex flex-col items-center gap-3 py-10">
-            <p className="text-muted-foreground">No reports yet.</p>
-            <Button type="button" onClick={() => navigate('/report')}>
+        <Card className="shadow-soft animate-fade-in-up">
+          <CardContent className="flex flex-col items-center gap-3 py-12 text-center">
+            <FileText className="h-10 w-10 text-muted-foreground/40" />
+            <p className="font-medium">No reports yet</p>
+            <p className="text-sm text-muted-foreground">
+              Spotted something that needs help? Send your first report.
+            </p>
+            <Button
+              type="button"
+              className="bg-brand-gradient text-white hover:opacity-90 mt-2"
+              onClick={() => navigate('/report')}
+            >
               Report something
             </Button>
           </CardContent>

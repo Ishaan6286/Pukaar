@@ -3,7 +3,7 @@ import maplibregl from 'maplibre-gl'
 import { useEffect, useRef, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Heart } from 'lucide-react'
 import { collection, onSnapshot, query, where } from 'firebase/firestore'
 
 import { Button } from '@/components/ui/button'
@@ -76,8 +76,8 @@ export default function HelpMap() {
           wrapper.setAttribute('data-user-pin', '')
           wrapper.className = 'relative w-5 h-5'
           wrapper.innerHTML = `
-            <div class="absolute inset-0 rounded-full bg-blue-500 opacity-60 animate-ping"></div>
-            <div class="relative w-5 h-5 rounded-full bg-blue-500 border-2 border-white shadow-lg"></div>
+            <div class="absolute inset-0 rounded-full bg-primary opacity-60 animate-ping"></div>
+            <div class="relative w-5 h-5 rounded-full bg-primary border-2 border-white shadow-soft"></div>
           `
 
           userMarkerRef.current = new maplibregl.Marker({ element: wrapper })
@@ -155,16 +155,21 @@ export default function HelpMap() {
   return (
     <div className="min-h-screen flex flex-col">
       <div className="p-4 border-b flex items-center justify-between">
-        <Button variant="ghost" size="sm" onClick={() => navigate('/')}>
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" size="icon" aria-label="Back" onClick={() => navigate('/')}>
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          <div className="bg-brand-gradient w-8 h-8 rounded-xl flex items-center justify-center shadow-soft">
+            <Heart aria-hidden="true" className="h-4 w-4 text-white" />
+          </div>
+        </div>
         <div className="text-center">
-          <h1 className="text-xl font-semibold">Food Banks Near You</h1>
+          <h1 className="text-xl font-semibold tracking-tight">Food Banks Near You</h1>
           <p className="text-xs text-muted-foreground">
             Find a food bank when you need one
           </p>
         </div>
-        <div className="w-9" />
+        <div className="w-16" />
       </div>
       <div className="flex-1 min-h-0 relative">
         <div ref={mapContainerRef} className="absolute inset-0" />

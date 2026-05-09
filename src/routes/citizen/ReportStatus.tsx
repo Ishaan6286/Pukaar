@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { ArrowLeft, CheckCircle2 } from 'lucide-react'
+import { ArrowLeft, Check } from 'lucide-react'
 import { doc, onSnapshot } from 'firebase/firestore'
 
 import CategoryBadge from '@/components/CategoryBadge'
@@ -13,25 +13,37 @@ import type { Report } from '@/types'
 
 interface StepProps {
   done: boolean
+  active: boolean
   label: string
   isLast?: boolean
+  nextDone?: boolean
 }
 
-function Step({ done, label, isLast }: StepProps) {
+function Step({ done, active, label, isLast, nextDone }: StepProps) {
   return (
     <li className="flex gap-3">
       <div className="flex flex-col items-center">
         <div
           className={cn(
-            'flex h-6 w-6 items-center justify-center rounded-full shrink-0',
-            done ? 'bg-primary text-primary-foreground' : 'border border-border',
+            'flex h-7 w-7 items-center justify-center rounded-full shrink-0 transition-colors',
+            done
+              ? 'bg-brand-gradient text-white shadow-soft'
+              : 'bg-card border border-border',
+            active && !done && 'ring-4 ring-primary/15',
           )}
         >
-          {done ? <CheckCircle2 className="h-3 w-3" /> : null}
+          {done ? <Check className="h-3.5 w-3.5" /> : null}
         </div>
-        {!isLast ? <div className="w-px flex-1 bg-border" /> : null}
+        {!isLast ? (
+          <div
+            className={cn(
+              'w-px flex-1',
+              nextDone ? 'bg-brand-gradient' : 'bg-border',
+            )}
+          />
+        ) : null}
       </div>
-      <div className={cn('pb-6 pt-0.5', done ? 'font-medium' : 'text-muted-foreground')}>
+      <div className={cn('pb-6 pt-1', done ? 'font-medium' : 'text-muted-foreground')}>
         {label}
       </div>
     </li>
@@ -80,11 +92,14 @@ export default function ReportStatus() {
         >
           <ArrowLeft className="h-4 w-4" />
         </Button>
-        <h1 className="text-2xl font-semibold">Report status</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">Report status</h1>
       </div>
 
       {loading ? (
-        <p className="text-muted-foreground text-sm">Loading…</p>
+        <div className="space-y-3">
+          <div className="skeleton h-7 w-40" />
+          <div className="skeleton h-32 rounded-lg" />
+        </div>
       ) : error ? (
         <p className="text-destructive">{error}</p>
       ) : !report ? (
@@ -103,28 +118,46 @@ function Body({ report }: { report: Report }) {
   const resolved = report.status === 'resolved'
   const acceptedLabel = report.ngoName ? `Accepted by ${report.ngoName}` : 'Accepted'
 
+  const states = [submitted, aiDone, accepted, resolved]
+  const activeIndex = states.findIndex((s) => !s)
+
   return (
-    <>
+    <div className="animate-fade-in-up">
       <ol className="space-y-0">
-        <Step done={submitted} label="Submitted" />
-        <Step done={aiDone} label="AI classified" />
-        <Step done={accepted} label={acceptedLabel} />
-        <Step done={resolved} label="Resolved" isLast />
+        <Step
+          done={submitted}
+          active={activeIndex === 0}
+          label="Submitted"
+          nextDone={aiDone}
+        />
+        <Step
+          done={aiDone}
+          active={activeIndex === 1}
+          label="AI classified"
+          nextDone={accepted}
+        />
+        <Step
+          done={accepted}
+          active={activeIndex === 2}
+          label={acceptedLabel}
+          nextDone={resolved}
+        />
+        <Step done={resolved} active={activeIndex === 3} label="Resolved" isLast />
       </ol>
 
       {report.ai ? (
-        <Card className="mt-4">
+        <Card className="mt-4 shadow-soft">
           <CardHeader className="flex flex-row flex-wrap items-center gap-2 space-y-0">
             <UrgencyBadge urgency={report.ai.urgency} />
             <CategoryBadge category={report.ai.category} />
           </CardHeader>
           <CardContent>
-            <p className="font-medium">{report.ai.summary}</p>
+            <p className="text-base font-medium leading-snug">{report.ai.summary}</p>
             {report.photoDataUrl ? (
               <img
                 src={report.photoDataUrl}
                 alt=""
-                className="rounded-lg border w-full max-h-60 object-cover mt-3"
+                className="rounded-xl border w-full max-h-60 object-cover mt-3 shadow-soft"
               />
             ) : null}
             {report.ngoName ? (
@@ -135,6 +168,6 @@ function Body({ report }: { report: Report }) {
           </CardContent>
         </Card>
       ) : null}
-    </>
+    </div>
   )
 }

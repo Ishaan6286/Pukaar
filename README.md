@@ -1,12 +1,11 @@
-# NGO Connect
+# Pukaar
 
-NGO Connect is a Progressive Web App that lets any citizen file a welfare
-report — a stray dog, a person sleeping rough, an abandoned construction site —
-in seconds, with a photo and a tap. Gemini multimodal AI classifies, summarizes,
-and triages the report; the app then routes it in real time to the nearest
-verified NGO that handles that category. NGO admins receive the report in a
-live inbox where they can Accept and Resolve, and the citizen sees status
-updates as they happen.
+Pukaar (Hindi: पुकार, "a call") routes citizen welfare reports to nearby NGOs
+using Gemini multimodal AI. Citizens can submit a report by voice, photo, or
+text — Pukaar classifies the situation, finds the closest matching NGO by
+geohash, and pushes the report to that NGO's inbox in real time. NGO admins
+receive the report in a live inbox where they can Accept and Resolve, and the
+citizen sees status updates as they happen.
 
 ## Tech stack
 

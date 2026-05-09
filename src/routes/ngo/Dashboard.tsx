@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { ReactElement } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Heart, Inbox } from 'lucide-react'
+import { Inbox } from 'lucide-react'
 import { collection, onSnapshot, query, where } from 'firebase/firestore'
 
 import ReportCard from '@/components/ReportCard'
@@ -64,12 +64,18 @@ export default function Dashboard(): ReactElement {
 
   return (
     <div className="min-h-screen p-4 max-w-2xl mx-auto">
-      <div className="flex flex-row justify-between items-center mb-4">
+      <header className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <div className="bg-brand-gradient w-8 h-8 rounded-xl flex items-center justify-center shadow-soft">
-            <Heart aria-hidden="true" className="h-4 w-4 text-white" />
+          <img
+            src="/pukaar.jpeg"
+            alt=""
+            className="w-8 h-8 select-none rounded-lg"
+            draggable={false}
+          />
+          <div>
+            <p className="pukaar-wordmark text-base leading-none">Pukaar</p>
+            <h1 className="text-xs text-muted-foreground leading-tight">Inbox</h1>
           </div>
-          <h1 className="text-2xl font-semibold tracking-tight">NGO Inbox</h1>
         </div>
         <div className="flex items-center gap-1">
           <Button variant="ghost" size="sm" onClick={() => navigate('/ngo/posts/new')}>
@@ -82,7 +88,7 @@ export default function Dashboard(): ReactElement {
             Sign out
           </Button>
         </div>
-      </div>
+      </header>
 
       {loading ? (
         <div className="flex flex-col gap-3">

@@ -141,6 +141,11 @@ export function useAuth(): AuthContextValue {
 
 export async function signInWithGoogle(): Promise<void> {
   const provider = new GoogleAuthProvider()
+  // Force Google to show the account chooser every time, instead of silently
+  // re-using the last-signed-in Google account on this browser. This lets a
+  // user sign out and then sign in as a different account (e.g. citizen vs
+  // NGO admin) without manually clearing browser data.
+  provider.setCustomParameters({ prompt: 'select_account' })
   await signInWithPopup(auth, provider)
 }
 

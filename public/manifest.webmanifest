@@ -1,12 +1,13 @@
 {
-  "name": "NGO Connect",
-  "short_name": "NGO Connect",
+  "name": "Pukaar",
+  "short_name": "Pukaar",
+  "description": "Pukaar routes citizen welfare reports to NGOs that can help.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#0f172a",
+  "theme_color": "#7c3aed",
   "icons": [
-    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
-    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+    { "src": "/pukaar.jpeg", "sizes": "any", "type": "image/jpeg", "purpose": "any" },
+    { "src": "/pukaar.jpeg", "sizes": "any", "type": "image/jpeg", "purpose": "maskable" }
   ]
 }

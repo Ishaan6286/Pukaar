@@ -4,36 +4,35 @@
 
 @layer base {
   :root {
-    /* Surface */
     --background: 0 0% 100%;
-    --foreground: 240 18% 14%;
+    --foreground: 256 22% 13%;
     --card: 0 0% 100%;
-    --card-foreground: 240 18% 14%;
+    --card-foreground: 256 22% 13%;
     --popover: 0 0% 100%;
-    --popover-foreground: 240 18% 14%;
+    --popover-foreground: 256 22% 13%;
 
-    /* Brand — refined violet, not Tailwind default */
-    --primary: 262 70% 56%;
+    /* Pukaar brand — deeper, more saturated violet */
+    --primary: 268 78% 52%;
     --primary-foreground: 0 0% 100%;
 
-    /* Muted backdrops with a faint lilac warmth */
-    --secondary: 262 35% 96%;
-    --secondary-foreground: 262 35% 28%;
-    --muted: 262 25% 97%;
-    --muted-foreground: 240 8% 46%;
-    --accent: 262 60% 96%;
-    --accent-foreground: 262 65% 38%;
+    /* Secondary surfaces with stronger lilac warmth */
+    --secondary: 270 50% 96%;
+    --secondary-foreground: 268 60% 30%;
+    --muted: 270 30% 97%;
+    --muted-foreground: 256 8% 44%;
+    --accent: 268 70% 95%;
+    --accent-foreground: 268 70% 36%;
 
     /* Feedback */
-    --destructive: 358 72% 56%;
+    --destructive: 348 78% 56%;
     --destructive-foreground: 0 0% 100%;
 
-    /* Hairlines */
-    --border: 260 25% 92%;
-    --input: 260 25% 92%;
-    --ring: 262 70% 56%;
+    /* Hairlines tinted slightly violet so they read as part of the brand */
+    --border: 268 35% 91%;
+    --input: 268 35% 91%;
+    --ring: 268 78% 52%;
 
-    --radius: 0.75rem;
+    --radius: 0.875rem;
   }
 
   .dark {
@@ -79,33 +78,56 @@
 }
 
 @layer components {
-  /* Soft brand-tinted card shadow used in lieu of harsh gray drop-shadows */
+  /* Slightly more saturated brand-tinted shadows */
   .shadow-soft {
     box-shadow:
-      0 1px 2px 0 hsl(262 40% 50% / 0.04),
-      0 4px 16px -4px hsl(262 40% 50% / 0.08);
+      0 1px 2px 0 hsl(268 60% 50% / 0.06),
+      0 6px 22px -6px hsl(268 60% 50% / 0.12);
   }
   .shadow-soft-lg {
     box-shadow:
-      0 2px 4px 0 hsl(262 40% 50% / 0.05),
-      0 12px 40px -8px hsl(262 40% 50% / 0.14);
+      0 2px 4px 0 hsl(268 60% 50% / 0.08),
+      0 18px 50px -10px hsl(268 60% 50% / 0.22);
   }
 
-  /* Restrained brand gradient for primary buttons + hero accents only */
+  /* Multi-stop Pukaar brand gradient (deep violet → magenta hint) */
   .bg-brand-gradient {
-    background-image: linear-gradient(135deg, hsl(262 75% 60%) 0%, hsl(272 65% 52%) 100%);
+    background-image: linear-gradient(135deg,
+      hsl(268 80% 50%) 0%,
+      hsl(282 75% 56%) 55%,
+      hsl(326 75% 62%) 100%);
   }
 
-  /* Subtle, mostly-white app background with a single soft brand wash in one corner */
+  /* Soft secondary brand wash for hero areas */
+  .bg-brand-wash {
+    background-image: linear-gradient(180deg,
+      hsl(270 80% 96%) 0%,
+      hsl(0 0% 100%) 70%);
+  }
+
+  /* App canvas — white with two distinct violet washes for depth */
   .bg-app-canvas {
     background:
-      radial-gradient(60% 40% at 100% 0%, hsl(262 80% 95% / 0.6) 0%, transparent 70%),
-      radial-gradient(50% 35% at 0% 100%, hsl(280 75% 96% / 0.5) 0%, transparent 70%),
+      radial-gradient(55% 40% at 100% 0%, hsl(270 85% 92% / 0.7) 0%, transparent 65%),
+      radial-gradient(45% 35% at 0% 95%, hsl(326 80% 94% / 0.55) 0%, transparent 65%),
       hsl(0 0% 100%);
+    background-attachment: fixed;
   }
 
-  /* Skeleton block — used in loading states, not "Loading…" strings */
+  /* Skeleton with a subtle violet shimmer rather than gray pulse */
   .skeleton {
-    @apply animate-pulse rounded-md bg-muted;
+    @apply animate-pulse rounded-md;
+    background: linear-gradient(90deg,
+      hsl(270 30% 95%) 0%,
+      hsl(270 50% 92%) 50%,
+      hsl(270 30% 95%) 100%);
+    background-size: 200% 100%;
+  }
+
+  /* Wordmark used in headers for the Pukaar name */
+  .pukaar-wordmark {
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: hsl(268 78% 38%);
   }
 }

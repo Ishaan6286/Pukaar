@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Heart, LogIn } from 'lucide-react'
+import { Loader2, LogIn } from 'lucide-react'
 
 import {
   Card,
@@ -38,35 +38,52 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <Card className="shadow-soft-lg animate-pop-in border-border/60">
-          <CardHeader className="items-center text-center">
-            <div className="bg-brand-gradient w-12 h-12 rounded-2xl flex items-center justify-center shadow-soft mb-2">
-              <Heart aria-hidden="true" className="h-6 w-6 text-white" />
-            </div>
-            <CardTitle className="tracking-tight">NGO Connect</CardTitle>
-            <CardDescription>
-              Connecting people, NGOs, and communities to deliver help where it is
-              needed most.
-            </CardDescription>
+    <div className="min-h-screen relative overflow-hidden bg-app-canvas">
+      <div className="absolute inset-x-0 top-0 h-1/2 bg-brand-wash pointer-events-none" />
+
+      <div className="relative min-h-screen flex flex-col items-center justify-center p-4">
+        <img
+          src="/pukaar.jpeg"
+          alt="Pukaar"
+          className="w-28 h-28 mb-4 drop-shadow-md select-none rounded-2xl"
+          draggable={false}
+        />
+        <h1 className="pukaar-wordmark text-3xl mb-2">Pukaar</h1>
+        <p className="text-sm text-muted-foreground mb-6 text-center max-w-xs">
+          Connecting people, NGOs, and communities to deliver help where it's needed most.
+        </p>
+
+        <Card className="w-full max-w-sm shadow-soft-lg animate-pop-in">
+          <CardHeader>
+            <CardTitle className="text-xl">Sign in</CardTitle>
+            <CardDescription>Use your Google account to continue.</CardDescription>
           </CardHeader>
-          <CardContent className="flex flex-col gap-3">
+          <CardContent>
             <Button
               className="w-full bg-brand-gradient text-white hover:opacity-90"
+              disabled={submitting}
               onClick={() => {
                 void handleSignIn()
               }}
-              disabled={submitting}
             >
-              <LogIn aria-hidden="true" className="mr-2 h-4 w-4" />
-              {submitting ? 'Signing in…' : 'Sign in with Google'}
+              {submitting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Signing in…
+                </>
+              ) : (
+                <>
+                  <LogIn className="mr-2 h-4 w-4" />
+                  Sign in with Google
+                </>
+              )}
             </Button>
-            {error && <p className="text-destructive text-sm">{error}</p>}
+            {error && <p className="text-destructive text-sm mt-3">{error}</p>}
           </CardContent>
         </Card>
-        <p className="text-xs text-muted-foreground text-center mt-4">
-          By signing in, you agree to use this for community good.
+
+        <p className="text-xs text-muted-foreground mt-6 text-center max-w-xs">
+          By signing in you agree to use Pukaar for community good.
         </p>
       </div>
     </div>
